@@ -109,7 +109,7 @@ input[type=text],input[type=password]{width:100%;background:var(--bg);border:1px
   <div class="sect">
     <div class="sh">Apps folder</div>
     <input id="baseDir" type="text" class="mono" placeholder="C:\ST\apps" aria-label="Apps folder">
-    <div class="btns"><button id="saveBase" type="button">Save folder</button></div>
+    <div class="btns"><button id="saveBase" type="button">Save folder</button><button id="scanBtn" type="button">Scan apps folder</button></div>
     <div class="note">Put all your html files in one folder and paste that folder's path here. Then when you add an app, type only the file name, for example billing.html.</div>
   </div>
   <div class="sect">
@@ -210,6 +210,49 @@ input[type=text],input[type=password]{width:100%;background:var(--bg);border:1px
   }
   var baseDir = loadBase();
   function saveBase(v){ baseDir = v; try{ localStorage.setItem(BASEKEY, v); }catch(e){} }
+
+  // ---- Auto-list the apps folder when this page is hosted on GitHub Pages ----
+  var AUTOKEY = 'my-apps-dashboard-auto';
+  function loadAuto(){
+    try{ var v = JSON.parse(localStorage.getItem(AUTOKEY)); if(Array.isArray(v)) return v; }catch(e){}
+    var sd = seedData().auto;
+    return Array.isArray(sd) ? sd : [];
+  }
+  var autoSeen = loadAuto();
+  function saveAuto(){ try{ localStorage.setItem(AUTOKEY, JSON.stringify(autoSeen)); }catch(e){} }
+  function prettyName(f){
+    return f.replace(/\.html?$/i,'').replace(/[-_]+/g,' ').trim().replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  }
+  function githubApiUrl(){
+    var m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+    if(!m) return '';
+    var segs = location.pathname.split('/').filter(Boolean);
+    var repo = m[1] + '.github.io', rest = [];
+    if(segs.length && segs[0].indexOf('.') === -1){ repo = segs[0]; rest = segs.slice(1); }
+    else if(segs.length){ rest = segs; }
+    if(rest.length && /\./.test(rest[rest.length-1])) rest.pop();
+    var dir = (baseDir && !/^([a-zA-Z]:[\\\/]|\\\\)/.test(baseDir) && !/^[a-z][a-z0-9+.-]*:\/\//i.test(baseDir)) ? baseDir : 'apps';
+    var path = rest.concat(dir.replace(/\\/g,'/').split('/').filter(Boolean)).map(encodeURIComponent).join('/');
+    return 'https://api.github.com/repos/' + m[1] + '/' + repo + '/contents/' + path;
+  }
+  function autoDiscover(done){
+    var api = githubApiUrl();
+    if(!api){ if(done) done('This page is not on GitHub Pages.'); return; }
+    fetch(api, {headers:{'Accept':'application/vnd.github+json'}})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(list){
+        var n = 0;
+        if(Array.isArray(list)) list.forEach(function(it){
+          if(it.type !== 'file' || !/\.html?$/i.test(it.name) || autoSeen.indexOf(it.name) > -1) return;
+          autoSeen.push(it.name);
+          var url = norm(it.name);
+          if(url && !apps.some(function(a){ return a.url === url; })){ apps.push({id:uid(), name:prettyName(it.name), url:url, note:'', color:''}); n++; }
+        });
+        if(n){ saveAuto(); refresh(); }
+        if(done) done(n ? ('Added ' + n + (n === 1 ? ' app' : ' apps')) : 'No new apps found.');
+      })
+      .catch(function(){ if(done) done('Could not read the apps folder from GitHub. Try again in a minute.'); });
+  }
   function weakHash(str){
     var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
     for(var i = 0, ch; i < str.length; i++){ ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
@@ -387,6 +430,10 @@ input[type=text],input[type=password]{width:100%;background:var(--bg);border:1px
   $('settingsBtn').addEventListener('click', function(){ openLock(pwHash ? 'enter' : 'create'); });
   $('changePw').addEventListener('click', function(){ $('settings').close(); openLock('change'); });
   $('lockCancel').addEventListener('click', function(){ $('lock').close(); });
+  $('scanBtn').addEventListener('click', function(){
+    var b = $('scanBtn'); b.textContent = 'Scanning...';
+    autoDiscover(function(msg){ b.textContent = msg; setTimeout(function(){ b.textContent = 'Scan apps folder'; }, 3000); });
+  });
   $('saveBase').addEventListener('click', function(){
     var v = $('baseDir').value.trim().replace(/^["']+|["']+$/g,'').replace(/[\\\/]+$/,'');
     saveBase(v); $('baseDir').value = v;
@@ -418,7 +465,7 @@ input[type=text],input[type=password]{width:100%;background:var(--bg);border:1px
     clone.querySelector('#swatches').textContent = '';
     clone.querySelector('#settings').removeAttribute('open');
     clone.querySelector('#dlg').removeAttribute('open');
-    clone.querySelector('#seed').textContent = JSON.stringify({apps:apps, pw:pwHash, base:baseDir}).replace(/</g,'\\u003c');
+    clone.querySelector('#seed').textContent = JSON.stringify({apps:apps, pw:pwHash, base:baseDir, auto:autoSeen}).replace(/</g,'\\u003c');
     var blob = new Blob(['<!doctype html>\n' + clone.outerHTML], {type:'text/html'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'app-dashboard.html';
@@ -450,6 +497,7 @@ input[type=text],input[type=password]{width:100%;background:var(--bg);border:1px
   });
 
   renderGrid();
+  autoDiscover();
 })();
 </script>
 <script>
