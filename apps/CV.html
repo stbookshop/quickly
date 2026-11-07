@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>CV Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#e4e5e7;--panel:#f4f4f5;--tx:#2b2b2b;--bd:#c3c6ca;--red:#d32f2f;accent-color:#d32f2f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+.app{display:flex;gap:16px;padding:16px;align-items:flex-start;flex-wrap:wrap}
+.form{width:340px;max-width:100%;background:var(--panel);padding:14px;border-radius:10px;border:1px solid var(--bd)}
+.form h3{margin:12px 0 4px;font-size:13px;text-transform:uppercase}
+.form label{display:block;font-size:12px;margin-top:8px}
+.form input,.form textarea,.form select{width:100%;padding:6px;border:1px solid var(--bd);border-radius:6px;background:#fff;color:#2b2b2b;font:inherit;font-size:13px}.form input:focus,.form textarea:focus,.form select:focus{outline:2px solid #d32f2f55;border-color:#d32f2f}
+.form textarea{min-height:70px}small{opacity:.65;font-size:11px}
+button{padding:9px 14px;border:0;border-radius:6px;background:var(--red);color:#fff;font-weight:600;cursor:pointer;margin-top:12px;width:100%}
+.prev{flex:1;min-width:0;overflow-x:auto}
+.cv{width:794px;min-height:1118px;background:#fff;color:#222;display:flex;font-size:12px;line-height:1.45;box-shadow:0 2px 12px #0003;margin:auto;
+ --side:#2b2b2b;--acc:#f0a500;--st:#fff}
+.cv.right{flex-direction:row-reverse}
+.side{width:265px;background:var(--side);color:var(--st);padding:28px 20px;flex-shrink:0}
+.main,.c1,.c2,.cols>*{min-width:0}.cv{overflow-wrap:anywhere;word-break:break-word}.main{flex:1;padding:28px 28px}
+.photo{overflow:hidden}.photo img{display:block;width:100%;height:100%;object-fit:cover}.photo{width:calc(150px*var(--pk,1));height:calc(150px*var(--pk,1));margin:0 auto 20px;background:#ddd center/cover;border:4px solid var(--acc);border-radius:50%}
+.cv.sq .photo{border-radius:6px}
+.side h4{margin:18px 0 8px;padding:4px 8px;background:var(--acc);color:var(--hc,#fff);font-size:1.08em;text-transform:uppercase;letter-spacing:1px}
+.side p{margin:4px 0;word-break:break-word}
+.bar{height:6px;background:#80808055;margin:3px 0 8px;border-radius:3px}.bar i{display:block;height:100%;background:var(--bar,var(--acc));border-radius:3px}.pc{display:flex;justify-content:space-between;gap:8px}
+.name{background:var(--nb,#eee);padding:14px 16px;margin:0 0 18px;border-left:6px solid var(--acc)}
+.name b{font-size:var(--nfs,40px);text-transform:uppercase;display:block;line-height:1.1}.name span{color:#666;letter-spacing:1px}
+.main h4{margin:16px 0 8px;font-size:1.25em;text-transform:uppercase;color:var(--acc);border-bottom:2px solid var(--acc);padding-bottom:3px}
+.item{margin-bottom:10px}.item b{display:block}.item em{color:inherit;opacity:1}
+.cv.tl .item{border-left:2px solid var(--acc);padding-left:12px;position:relative}.cv.tl .item:before{content:"";position:absolute;left:-6px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.cv.rnd .side{border-radius:0 0 120px 0}.cv.rnd.right .side{border-radius:0 0 0 120px}.cv.rnd .side h4{border-radius:0 14px 14px 0}.cv.rnd .main h4{border:0;background:var(--acc);color:var(--hc);padding:5px 12px;border-radius:0 14px 14px 0}
+.cv.top{flex-direction:column}
+.top .hd{background:var(--side);color:var(--st);padding:26px 30px;display:flex;align-items:center;gap:24px;flex-direction:row-reverse;justify-content:space-between}
+.top.pl .hd{flex-direction:row;justify-content:flex-start}
+.top .hd .photo{margin:0;width:calc(130px*var(--pk,1));height:calc(130px*var(--pk,1));flex-shrink:0}
+.top .nm b{font-size:var(--nfs,40px);text-transform:uppercase;display:block;line-height:1.1}
+.top .nm span{letter-spacing:2px;color:var(--acc);text-transform:uppercase;display:block;margin-bottom:8px;font-weight:600}
+.top .ct p{margin:2px 0}
+.top .cols{display:flex;flex:1}.top .c1{width:265px;padding:6px 20px 22px;flex-shrink:0}.top .c2{flex:1;padding:6px 26px 22px}
+.top.dk1 .c1{background:var(--side);color:var(--st)}
+.top h4{margin:16px 0 8px;font-size:1.17em;text-transform:uppercase;color:var(--acc);border-bottom:2px solid var(--acc);padding-bottom:3px}
+.top.bars h4{background:var(--acc);color:var(--hc);text-align:center;border:0;padding:5px;letter-spacing:2px}
+.top.wave .hd{border-radius:0 0 50% 50%/0 0 36px 36px}
+.cv{font-family:Calibri,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+.form{max-height:calc(100vh - 32px);overflow:auto;position:sticky;top:16px}
+.form h3{border-top:1px solid var(--bd);padding-top:12px;color:var(--red)}
+.btns{display:flex;gap:6px}.btns button{margin-top:10px;font-size:12px;padding:9px}
+button.sec{background:transparent;color:var(--tx);border:1px solid var(--bd);width:90px}
+.item ul{margin:3px 0 0 16px;padding:0}.item li{margin:1px 0}
+.photo.ph{display:flex;align-items:center;justify-content:center;font-size:calc(44px*var(--pk,1));font-weight:700;color:#fff;background-color:#9ca3af}
+@media print{html,body{margin:0!important;padding:0!important;background:var(--pb,#fff)!important}.app,.prev,#zw{display:block;padding:0!important;margin:0!important;overflow:visible!important;zoom:1!important}.cv{width:210mm!important;min-height:296mm!important;margin:0!important;box-shadow:none!important}.form{display:none!important}}
+@media print{body{background:#fff}.form{display:none}.app{padding:0}.cv{box-shadow:none;margin:0}@page{size:A4;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+[hidden]{display:none!important}
+.rr{display:flex;gap:6px;margin-top:6px}.rr select{width:auto;flex:1;min-width:0}.rr select.gs{flex:none;width:76px}
+.rr .x{width:32px;margin:0;padding:6px;background:#dc2626;flex:none}
+button.add{width:auto;padding:7px 12px;font-size:12px;margin-top:8px}
+.sfoot{text-align:center;font-weight:700;font-size:17px;padding:14px 12px calc(14px + env(safe-area-inset-bottom,0px));border-top:3px solid var(--red);background:var(--panel);color:var(--tx)}@media print{.sfoot{display:none!important}}.refs{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.refs .item{min-width:0;word-break:break-word}.res{padding:1px 0}.photo.blank{visibility:hidden}.exi{margin:0 0 4px 1.4em}.cv[data-shape=round] .photo{border-radius:50%;clip-path:none}.cv[data-shape=rsq] .photo{border-radius:18%;clip-path:none}.cv[data-shape=square] .photo{border-radius:0;clip-path:none}.cv[data-shape=oct] .photo{border:0;padding:4px;background:var(--acc);border-radius:0;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}.cv[data-shape=oct] .photo img{clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}.cv[data-shape=oct] .photo.ph span{display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#9ca3af;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}.item .sy{display:inline-block;width:1.5em;text-indent:0;color:var(--acc)}.hsy b{padding-left:1.5em;text-indent:-1.5em}.hsy em{display:block;padding-left:1.5em}.hsy ul{margin-left:calc(1.5em + 16px)!important}.exh{font-weight:700;margin:12px 0 4px}.exh:before{content:"●";color:var(--acc);margin-right:8px;font-size:.8em}.rt{border-collapse:collapse;width:100%}.rt th{text-align:left;font-weight:700;padding:3px 0 5px;border-bottom:1px solid #8885}.rt td{padding:2px 0}.rt th:first-child,.rt td:first-child{width:62%;padding-right:12px}.pi{border-collapse:collapse;width:100%}.pi td{padding:2px 0;vertical-align:top}.pi td:first-child{white-space:nowrap;padding-right:8px;font-weight:600}.pi td:nth-child(2){width:22px;text-align:center}.decl{margin-top:18px;border-top:3px solid var(--acc);padding-top:10px;font-style:italic}.decl p{margin:0 0 10px}.decl .dc{font-size:.92em}.decl .dn{font-weight:700;text-transform:uppercase;margin-top:16px}.item .sl{list-style:none;margin:3px 0 0;padding:0}.sl li{padding-left:1.5em;text-indent:-1.5em}.sl li span{display:inline-block;width:1.5em;text-indent:0;color:var(--acc)}.sub{font-weight:700;color:var(--acc);margin:10px 0 3px;text-transform:uppercase;letter-spacing:.5px;font-size:.95em}.res b{color:var(--acc)}.side .res b{color:inherit}
+</style></head><body>
+<div class="app">
+<div class="form">
+<div style="font-size:18px;font-weight:700;color:var(--red)">CV Builder</div><small>Fill the form · live preview · print to PDF</small>
+<div class="btns"><button class="sec" style="width:auto;flex:1" onclick="tab(0)">Form</button><button class="sec" style="width:auto;flex:1" onclick="tab(1)">⚙ Settings</button></div>
+<div id="pgMain">
+<label>Template<select id="tpl"><option value="0">1 – Charcoal + Gold</option><option value="1">2 – Charcoal + Yellow</option><option value="2">3 – Maroon</option><option value="3">4 – Dark + Teal</option><option value="4">5 – Right sidebar Orange</option><option value="5">6 – Navy + Blue</option><option value="6">7 – Green + Timeline</option><option value="7">8 – Red/Black Right + Timeline</option><option value="8">9 – Purple Rounded</option><option value="9">10 – Light Minimal</option><option value="10">11 – Teal Rounded</option><option value="11">12 – Black + Gold Timeline</option><option value="12">13 – Modern Professional (wave)</option><option value="13">14 – Simple / Minimal</option><option value="14">15 – Corporate Dark Column</option><option value="15">16 – Black & Gold Premium</option><option value="16">17 – Student Light Blue</option><option value="17">18 – IT Dark Cyan</option><option value="18">19 – Government Bars</option><option value="19">20 – Modern Clean</option><option value="20">21 – Red Wave Dark Column</option><option value="21">22 – Blue Wave Bars</option><option value="22">23 – Light Ash + Red</option></select></label>
+<label>Sidebar colour<input type="color" id="cs" value="#2b2b2b"></label>
+<label>Accent colour<input type="color" id="ca" value="#d89b00"></label>
+<label><input type="checkbox" id="cauto" checked style="width:auto"> Bar colour by level (red / orange / green)</label>
+<label>Bar colour <small>(used when "by level" is off)</small><input type="color" id="cbar" value="#d89b00"></label>
+<label>Body colour<input type="color" id="cb" value="#ffffff"></label>
+<label><input type="checkbox" id="fit" checked style="width:auto"> Auto-fit to one A4 page</label>
+<label>Name font size (header only): <b id="nfsv">40px</b><input type="range" id="nfs" min="18" max="64" step="1" value="40"></label>
+<label>Font size: <b id="fsv"></b><input type="range" id="fs" min="8" max="17" step="0.5" value="12" oninput="document.getElementById('fit').checked=false"></label>
+<label>Line spacing<select id="lsp"><option value="1.4">Tight</option><option value="1.5">Normal</option><option value="1.7" selected>Relaxed</option><option value="1.9">Wide</option></select></label>
+<label>Photo<input type="file" id="photo" accept="image/*"></label>
+<label>Photo shape<select id="pshape"><option value="">Template default</option><option value="round">Circle</option><option value="rsq">Rounded square</option><option value="square">Square</option><option value="oct">Octagon</option></select></label>
+<label>Photo size: <b id="pszv">100%</b><input type="range" id="psz" min="70" max="150" step="5" value="100"></label>
+<label>Photo zoom: <b id="pzv">100%</b><input type="range" id="pz" min="100" max="300" step="5" value="100"></label>
+<label>Photo focus – left / right<input type="range" id="px" min="0" max="100" step="1" value="50"></label>
+<label>Photo focus – up / down<input type="range" id="py" min="0" max="100" step="1" value="50"></label>
+<h3>Basic</h3>
+<label>Name<input id="name"></label>
+<label>Job title<input id="title"></label>
+<label>Address<input id="addr"></label>
+<label>NIC number<input id="nic"></label>
+<label>Phone number<input id="phone" type="tel"></label>
+<label>Email<input id="email" type="email"></label>
+<h3>Personal Information</h3>
+<small>NIC number (above) is shown here too. Empty fields are not shown.</small>
+<label>Full name<input id="pfull"></label>
+<label>Birth day<input id="pbirth" type="date"></label>
+<label>Age<input id="page"></label>
+<label>Gender<select id="pgen"><option value="">Select gender</option><option>Male</option><option>Female</option></select></label>
+<label>Religion<select id="prel"><option value="">Select religion</option><option>Buddhist</option><option>Hindu</option><option>Islam</option><option>Catholic</option><option>Christian</option><option>Other</option></select></label>
+<label>Civic status<select id="pciv"><option value="">Select civic status</option><option>Unmarried</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></label>
+<label>District<select id="pdis"><option value="">Select district</option><option>Ampara</option><option>Anuradhapura</option><option>Badulla</option><option>Batticaloa</option><option>Colombo</option><option>Galle</option><option>Gampaha</option><option>Hambantota</option><option>Jaffna</option><option>Kalutara</option><option>Kandy</option><option>Kegalle</option><option>Kilinochchi</option><option>Kurunegala</option><option>Mannar</option><option>Matale</option><option>Matara</option><option>Monaragala</option><option>Mullaitivu</option><option>Nuwara Eliya</option><option>Polonnaruwa</option><option>Puttalam</option><option>Ratnapura</option><option>Trincomalee</option><option>Vavuniya</option></select></label>
+<label>School<input id="psch"></label>
+<label>Summary<textarea id="sum"></textarea></label>
+<h3>Lists</h3>
+<label>Skills <small>one per line: Skill|80</small><textarea id="skills"></textarea></label>
+<h3>Languages</h3><div id="lgrows"></div><button type="button" class="sec add" id="lgadd">+ Add language</button>
+<div class="rr"><input id="nlang" placeholder="Not in the list? Type a new language (e.g. Korean)" style="width:auto;flex:1;min-width:0"><button type="button" class="sec add" id="nlbtn" style="margin-top:0">Add new</button></div>
+<label>Experience <small>Period|Position|Company|Point 1; Point 2; Point 3</small><textarea id="exp"></textarea></label>
+<label>Symbol for Experience entries<select id="symx"><option value="✔">✔ Tick</option><option value="➤" selected>➤ Arrow</option><option value="■">■ Square</option><option value="★">★ Star</option><option value="◆">◆ Diamond</option><option value="➜">➜ Right arrow</option><option value="•">• Dot</option><option value="–">– Dash</option><option value="">None</option></select></label>
+<label>Education <small>Year|Degree|Institute</small><textarea id="edu"></textarea></label>
+<label>Symbol for Education entries<select id="syme"><option value="✔">✔ Tick</option><option value="➤" selected>➤ Arrow</option><option value="■">■ Square</option><option value="★">★ Star</option><option value="◆">◆ Diamond</option><option value="➜">➜ Right arrow</option><option value="•">• Dot</option><option value="–">– Dash</option><option value="">None</option></select></label>
+<label>Other Education Qualifications <small>one per line</small><textarea id="oth"></textarea></label>
+<label>Symbol for these lines<select id="sym"><option value="✔" selected>✔ Tick</option><option value="➤">➤ Arrow</option><option value="■">■ Square</option><option value="★">★ Star</option><option value="◆">◆ Diamond</option><option value="➜">➜ Right arrow</option><option value="•">• Dot</option><option value="–">– Dash</option><option value="">None</option></select></label>
+<h3>O/L Results</h3><label>O/L exam year<input id="olyr" inputmode="numeric"></label><label>O/L index number<input id="olidx"></label><div id="olrows"></div><button type="button" class="sec add" id="oladd">+ Add subject</button>
+<h3>A/L Results</h3><label>A/L exam year<input id="alyr" inputmode="numeric"></label><label>A/L index number<input id="alidx"></label><div id="alrows"></div><button type="button" class="sec add" id="aladd">+ Add subject</button>
+<h3>References</h3>
+<label>Reference 1 – Name<input id="r1n"></label>
+<label>Position<input id="r1p"></label>
+<label>Phone<input id="r1t"></label>
+<label style="margin-top:14px">Reference 2 – Name<input id="r2n"></label>
+<label>Position<input id="r2p"></label>
+<label>Phone<input id="r2t"></label>
+<label>Hobbies <small>one per line</small><textarea id="hob"></textarea></label>
+<h3>Declaration</h3>
+<label>Declaration text <small>(name is added automatically; leave empty to hide)</small><textarea id="decl">I do hereby declare that the above written particulars are true &amp; accurate to the best of my knowledge.</textarea></label>
+<label>Name shown under declaration <small>(follows Name automatically – edit to shorten it; your main Name does not change)</small><input id="dname" oninput="dEd=this.value.trim()!==''"></label>
+<div class="btns"><button onclick="print()">Print / Save PDF</button><button class="sec" onclick="dl()">Save data</button><button class="sec" onclick="try{localStorage.removeItem('cvb')}catch(x){};location.reload()">Reset</button></div>
+<small>Print dialog: Margins = None, Background graphics = ON, Headers/footers = OFF</small>
+</div>
+<div id="pgSet" hidden>
+<h3>Saved CVs (by name)</h3>
+<small>Each CV is saved automatically under the person's name. Pick one and press Open to continue editing it.</small>
+<select id="pl" size="4" style="height:auto"></select>
+<div class="btns"><button type="button" onclick="plOpen()">Open</button><button type="button" class="sec" style="width:auto" onclick="plNew()">New CV</button><button type="button" class="sec" style="width:auto" onclick="plDel()">Delete</button></div>
+<small>Dropdown lists – one item per line. Add, edit or remove; changes apply instantly.</small>
+<h3>O/L</h3>
+<label>Subjects<textarea id="setOLsub" style="min-height:140px">Sinhala Language & Literature
+Tamil Language
+English Language
+Mathematics
+Science
+History
+Religion (Buddhism)
+Religion (Catholicism)
+Geography
+Health & Physical Education
+ICT
+Commerce & Accounting
+Art</textarea></label>
+<label>Grades<textarea id="setOLgr">A
+B
+C
+S
+W</textarea></label>
+<h3>A/L</h3>
+<label>Subjects<textarea id="setALsub" style="min-height:140px">Combined Mathematics
+Physics
+Chemistry
+Biology
+Accounting
+Business Studies
+Economics
+Geography
+History
+Political Science
+Logic
+ICT
+General English
+Common General Test</textarea></label>
+<label>Grades<textarea id="setALgr">A
+B
+C
+S
+F</textarea></label>
+<h3>Languages</h3>
+<label>Languages<textarea id="setLGsub" style="min-height:110px">Sinhala
+English
+Tamil
+Hindi
+Japanese
+French
+German
+Chinese</textarea></label>
+<label>Levels (%)<textarea id="setLGgr" style="min-height:110px">100
+90
+80
+70
+60
+50
+40
+30
+20
+10</textarea></label>
+<h3>Backup / Restore</h3>
+<small>Save your CV data, then load it later to continue editing. You can also hide the data inside your PDF: 1) Print → Save as PDF as usual. 2) Choose that PDF under "Attach data to PDF". 3) Keep the new PDF it downloads – load it back with "Load from file".</small>
+<div class="btns"><button type="button" onclick="dl()">Download file</button><button type="button" onclick="cp()">Copy data</button></div>
+<label>Attach data to PDF <small>(choose the PDF you printed)</small><input type="file" id="pa" accept="application/pdf,.pdf"></label>
+<label>Load from file <small>(.json or a PDF made above)</small><input type="file" id="ld" accept=".json,.pdf,application/json,application/pdf"></label>
+<label>Or paste data here<textarea id="pt"></textarea></label>
+<button type="button" onclick="ldo($('pt').value)">Load pasted data</button>
+<small id="bkm"></small>
+<button type="button" onclick="tab(0)">Done</button>
+</div>
+</div>
+<div class="prev" id="prev"><div id="zw"><div class="cv" id="cv"></div></div></div>
+</div>
+<div class="sfoot">Jeewan Madhusanka Kariyawasam – All Rights Reserved 2026</div>
+<script>
+const T=[
+{s:"#2b2b2b",a:"#d89b00",c:""},{s:"#2b2b2b",a:"#f0a500",c:"",hc:"#222"},
+{s:"#8a2a5c",a:"#8a2a5c",c:"",sa:"#ffffff40"},{s:"#222222",a:"#16a5b8",c:""},
+{s:"#2b2b2b",a:"#f5a000",c:"right",hc:"#222"},{s:"#16203a",a:"#1d8fc0",c:"oct"},
+{s:"#14532d",a:"#22c55e",c:"tl"},{s:"#1f1f1f",a:"#dc2626",c:"right tl"},{s:"#6b21a8",a:"#d946ef",c:"rnd"},
+{s:"#e5e7eb",a:"#2563eb",c:"sq"},{s:"#0f766e",a:"#14b8a6",c:"sq rnd"},{s:"#111111",a:"#eab308",c:"oct tl"},
+{s:"#0f2a5c",a:"#3b82f6",c:"top wave"},{s:"#ffffff",a:"#1e3a8a",c:"top"},{s:"#0f1f3d",a:"#3b82f6",c:"top dk1 pl"},
+{s:"#0b0b0f",a:"#d4a017",b:"#0b0b0f",c:"top pl"},{s:"#dbeafe",a:"#2563eb",b:"#f8fbff",c:"top wave"},{s:"#08142e",a:"#22d3ee",b:"#0a1a3a",c:"top pl"},
+{s:"#ffffff",a:"#1e40af",c:"top bars"},{s:"#f3f4f6",a:"#1d4ed8",c:"top pl sq"},{s:"#1c2233",a:"#c1273a",c:"top dk1 pl bars wave"},{s:"#2f6fd6",a:"#2f6fd6",c:"top bars wave pl"},
+{s:"#e4e5e7",a:"#d32f2f",c:"tl"}];
+const $=i=>document.getElementById(i);
+const e=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rows=id=>$(id).value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>l.split("|").map(x=>x.trim()));
+const mk=n=>Array.from({length:n},()=>({s:"",g:""}));const defLG=()=>[{s:"Sinhala",g:"100"},{s:"English",g:"70"},{s:"Tamil",g:"50"}];let OL=mk(9),AL=mk(4),LG=defLG();let img="";let dEd=false;let SAVED=null;try{SAVED=JSON.parse(localStorage.getItem("cvb"))}catch(x){}
+$("photo").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);img=c.toDataURL("image/jpeg",.88);$("pz").value=100;$("px").value=50;$("py").value=50;render()};im.onerror=()=>{img=r.result;render()};im.src=r.result};r.readAsDataURL(f)};
+function barH(n,raw){const v=raw===undefined||raw===""||isNaN(+raw)?70:Math.min(100,Math.max(0,Math.round(+raw)));const c=$("cauto").checked?(v<40?"#ef4444":v<70?"#f59e0b":"#22c55e"):"";return `<p>${e(n)}</p><div class="bar"><i style="width:${v}%${c?";background:"+c:""}"></i></div>`}
+function bars(id){return rows(id).map(r=>barH(r[0],r[1])).join("")}
+function barsLG(){return LG.filter(r=>r.s).map(r=>barH(r.s,r.g)).join("")}
+function fname(){return($("name").value.trim()||"CV").replace(/[\\\/:*?"<>|]+/g,"").replace(/\s+/g,"_")}
+function render(){render0();fit();save();$("pzv").textContent=$("pz").value+"%";document.title=$("name").value.trim()?$("name").value.trim()+" - CV":"CV"}
+function fit(){const cv=$("cv"),zw=$("zw");zw.style.zoom=1;if(!$("fit").checked)cv.style.fontSize=$("fs").value+"px";else{let lo=8,hi=17;for(let i=0;i<8;i++){const m=(lo+hi)/2;cv.style.fontSize=m+"px";if(cv.offsetHeight<=1118)lo=m;else hi=m}cv.style.fontSize=lo+"px";$("fs").value=Math.round(lo*2)/2}$("fsv").textContent=parseFloat(cv.style.fontSize).toFixed(1)+"px";scale()}
+function scale(){$("zw").style.zoom=Math.min(1,($("prev").clientWidth-4)/794)}
+window.addEventListener("resize",scale);
+const IDS=["nfs","olidx","alidx","pgen","pshape","psz","symx","syme","olyr","alyr","pfull","pbirth","page","prel","pciv","pdis","psch","dname","decl","pz","px","py","sym","oth","fs","lsp","setLGsub","setLGgr","cbar","setOLsub","setALsub","setOLgr","setALgr","tpl","cs","ca","cb","name","title","phone","email","addr","nic","sum","skills","exp","edu","hob","r1n","r1p","r1t","r2n","r2p","r2t"];
+function getData(){const o={v:2,img,dEd,OL,AL,LG,auto:$("cauto").checked,fit:$("fit").checked};IDS.forEach(i=>o[i]=$(i).value);return o}
+let ptmr;function save(){try{localStorage.setItem("cvb",JSON.stringify(getData()))}catch(x){}clearTimeout(ptmr);ptmr=setTimeout(psave,800)}
+const PK="cvb_profiles";
+function pmap(){try{return JSON.parse(localStorage.getItem(PK))||{}}catch(x){return{}}}
+function pdraw(){const m=pmap(),k=Object.keys(m).sort((a,b)=>(m[b].t||0)-(m[a].t||0));$("pl").innerHTML=k.map(n=>`<option>${e(n)}</option>`).join("")||"<option disabled>No saved CVs yet</option>"}
+function psave(){const n=$("name").value.trim();if(!n)return;const m=pmap(),d=getData();m[n]={t:Date.now(),d};try{localStorage.setItem(PK,JSON.stringify(m))}catch(x){delete d.img;try{localStorage.setItem(PK,JSON.stringify(m))}catch(y){}}pdraw()}
+function plOpen(){const n=$("pl").value,m=pmap();if(!n||!m[n])return;restore(m[n].d);["ol","al","lg"].forEach(drawRows);msg("Opened: "+n);tab(0)}
+function plDel(){const n=$("pl").value,m=pmap();if(!n||!m[n])return;delete m[n];try{localStorage.setItem(PK,JSON.stringify(m))}catch(x){}pdraw();msg("Deleted: "+n)}
+function plNew(){psave();try{localStorage.removeItem("cvb")}catch(x){}location.reload()}
+function restore(o){o=o||SAVED;if(!o)return;dEd=o.dEd===true;IDS.forEach(i=>{if(o[i]!==undefined&&!(i==="langs"&&!o.v&&!o[i]))$(i).value=o[i]});img=o.img||"";OL=o.OL&&o.OL.length?o.OL:mk(9);AL=o.AL&&o.AL.length?o.AL:mk(4);LG=o.LG||defLG();$("cauto").checked=o.auto!==false;$("fit").checked=o.fit!==false;render()}
+function render0(){if(!dEd)$("dname").value=$("name").value;
+ const t=T[+$("tpl").value],cv=$("cv");const lum=h=>{const n=parseInt(h.slice(1),16);return ((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000};
+ cv.className="cv "+t.c;cv.style.lineHeight=$("lsp").value;
+ const S=$("cs").value,A=$("ca").value;cv.style.setProperty("--side",S);cv.style.setProperty("--acc",A);cv.style.setProperty("--nfs",$("nfs").value+"px");$("nfsv").textContent=$("nfs").value+"px";cv.dataset.shape=$("pshape").value||(/\boct\b/.test(t.c)?"oct":"");cv.style.setProperty("--pk",$("psz").value/100);$("pszv").textContent=$("psz").value+"%";cv.style.setProperty("--bar",$("cbar").value);cv.style.setProperty("--hc",lum(A)>150?"#222":"#fff");cv.style.setProperty("--st",lum(S)>150?"#222":"#fff");const B=$("cb").value;cv.style.background=B;cv.style.color=lum(B)>150?"#222":"#e5e7eb";document.documentElement.style.setProperty("--pb",B);
+ const sec=(h,b)=>b?`<h4>${h}</h4>${b}`:"";
+ const contact=[$("addr").value,$("phone").value,$("email").value].filter(Boolean).map(x=>`<p>${e(x)}</p>`).join("");
+ const hob=rows("hob").map(r=>`<p>• ${e(r[0])}</p>`).join("");
+ const itm=(r,sy)=>{const one=r.length===1;return `<b>${sy?`<span class="sy">${e(sy)}</span>`:""}${e(one?r[0]:r[1])}</b>`+(one?"":`<em>${[r[2],r[0]].filter(Boolean).map(e).join(" | ")}</em>`)};
+ const exp=rows("exp").map(r=>`<div class="item${$("symx").value?" hsy":""}">${itm(r,$("symx").value)}${r[3]?`<ul>${r[3].split(";").map(x=>`<li>${e(x.trim())}</li>`).join("")}</ul>`:""}</div>`).join("");
+ const edu=rows("edu").map(r=>`<div class="item${$("syme").value?" hsy":""}">${itm(r,$("syme").value)}</div>`).join("");
+ const ini=($("name").value.match(/\b\w/g)||[]).slice(0,2).join("").toUpperCase();const ph=img?`<div class="photo"><img alt="" src="${img}" style="object-position:${$("px").value}% ${$("py").value}%;transform:scale(${$("pz").value/100});transform-origin:${$("px").value}% ${$("py").value}%"></div>`:`<div class="photo blank"></div>`;
+ const ref=[["r1n","r1p","r1t"],["r2n","r2p","r2t"]].filter(g=>g.some(i=>$(i).value.trim())).map(g=>`<div class="item"><b>${e($(g[0]).value)}</b><em>${[$(g[1]).value,$(g[2]).value].filter(Boolean).map(e).join("<br>")}</em></div>`).join("");const refW=ref?`<div class="refs">${ref}</div>`:"";
+ const about=$("sum").value.trim()?sec("About Me",`<p>${e($("sum").value)}</p>`):"";
+ const resH=a=>a.filter(r=>r.s).map(r=>`<div class="res">${e(r.s)}${r.g?` - <b>${e(r.g)}</b>`:""}</div>`).join("");
+ const oth=$("oth").value.split("\n").map(x=>x.trim()).filter(Boolean);const othH=oth.length?`<div class="item"><ul class="sl">${oth.map(x=>`<li>${$("sym").value?`<span>${e($("sym").value)}</span>`:""}${e(x)}</li>`).join("")}</ul></div>`:"";
+ const sub=(h,b)=>b?`<div class="sub">${h}</div>${b}`:"";
+ const dtxt=$("decl").value.trim(),nm=$("dname").value.trim();const DECL=dtxt?`<div class="decl"><p>${e(dtxt)}</p><p class="dc">Thanking You,<br>Yours Sincerely,</p>${nm?`<p class="dn">${e(nm)}</p>`:""}</div>`:"";
+function pv(i){const v=$(i).value.trim();if(i!=="pbirth"||!/^\d{4}-\d\d-\d\d$/.test(v))return v;const [y,m,d]=v.split("-").map(Number),M=["January","February","March","April","May","June","July","August","September","October","November","December"];return d+(d%10==1&&d!=11?"st":d%10==2&&d!=12?"nd":d%10==3&&d!=13?"rd":"th")+" "+M[m-1]+" "+y}
+ const piR=[["Full Name","pfull"],["Birth Day","pbirth"],["Age","page"],["Gender","pgen"],["Religion","prel"],["Civic Status","pciv"],["NIC No","nic"],["District","pdis"],["School","psch"]].filter(r=>pv(r[1]));
+ const PI=piR.length?sec("Personal Information",`<table class="pi">${piR.map(r=>`<tr><td>${r[0]}</td><td>-</td><td>${e(pv(r[1]))}</td></tr>`).join("")}</table>`):"";
+ const exam=(t,y,a,ix)=>{const rw=a.filter(r=>r.s);if(!rw.length)return"";y=y.trim();ix=ix.trim();return `<div class="exh">${e(t)}${y?` ( ${e(y)} )`:""}</div>${ix?`<div class="exi">Index No : ${e(ix)}</div>`:""}<table class="rt"><tr><th>Subject</th><th>Grade</th></tr>${rw.map(r=>`<tr><td>${e(r.s)}</td><td>${r.g?": "+e(r.g):""}</td></tr>`).join("")}</table>`};
+ const EDUS=sec("Education",edu+exam("G.C.E Ordinary Level Examination",$("olyr").value,OL,$("olidx").value)+exam("G.C.E Advanced Level Examination",$("alyr").value,AL,$("alidx").value)+sub("Other Qualifications",othH));
+ if(t.c.includes("top")){
+  const dk=t.c.includes("dk1");
+  const L=(dk?about:"")+sec("Skills",bars("skills"))+sec("Languages",barsLG())+sec("Hobbies",hob);
+  const R=(dk?"":about)+PI+sec("Experience",exp)+EDUS+sec("References",refW)+DECL;
+  cv.innerHTML=`<div class="hd">${ph}<div class="nm"><b>${e($("name").value)}</b><span>${e($("title").value)}</span><div class="ct">${contact}</div></div></div><div class="cols"><div class="c1">${L}</div><div class="c2">${R}</div></div>`;
+ }else cv.innerHTML=`<div class="side">${ph}${sec("Contact",contact)}${sec("Skills",bars("skills"))}${sec("Languages",barsLG())}${sec("Hobbies",hob)}</div><div class="main"><div class="name"><b>${e($("name").value)}</b><span>${e($("title").value)}</span></div>${about}${PI}${sec("Experience",exp)}${EDUS}${sec("References",refW)}${DECL}</div>`;
+}
+document.querySelectorAll(".form input,.form textarea,.form select").forEach(x=>x.addEventListener("input",render));
+$("tpl").onchange=()=>{const t=T[+$("tpl").value];$("cs").value=t.s;$("ca").value=t.a;{const L=h=>{const n=parseInt(h.slice(1),16);return ((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000};$("cbar").value=((!t.c.includes("top")||t.c.includes("dk1"))&&Math.abs(L(t.s)-L(t.a))<60)?"#ffffff":t.a}$("cb").value=t.b||"#ffffff";render()};
+function dl(){const n=fname();const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(getData())],{type:"application/json"}));a.download=n+"_cv_data.json";document.body.appendChild(a);a.click();a.remove();$("bkm").textContent="File download started. If nothing downloads, use Copy data."}
+function cp(){const t=JSON.stringify(getData());$("pt").value=t;try{navigator.clipboard.writeText(t)}catch(x){}$("pt").select();$("bkm").textContent="Data copied. Paste it into a note to keep it."}
+function ldo(t){try{const o=JSON.parse(t);if(!o||typeof o!=="object"||Array.isArray(o))throw 0;restore(o);["ol","al","lg"].forEach(drawRows);$("bkm").textContent="Loaded ✓";tab(0)}catch(x){$("bkm").textContent="Invalid CV data."}}
+const MK="CVBUILDERDATA1:",msg=t=>$("bkm").textContent=t;
+const lat=u=>{let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return s};
+function embedPdf(u){const t=lat(u),si=t.lastIndexOf("startxref"),prev=parseInt(t.slice(si+9));
+ if(si<0||isNaN(prev)||t.substr(prev,4)!=="xref")throw 1;
+ const tr=t.substr(t.indexOf("trailer",prev),1000),size=+(tr.match(/\/Size\s+(\d+)/)||[])[1],root=(tr.match(/\/Root\s+\d+\s+\d+\s+R/)||[])[0];
+ if(!size||!root)throw 2;const info=(tr.match(/\/Info\s+\d+\s+\d+\s+R/)||[""])[0];
+ const j=new TextEncoder().encode(JSON.stringify(getData())),data=MK+btoa(lat(j));
+ const head="\n"+size+" 0 obj\n<< /Length "+data.length+" >>\nstream\n"+data+"\nendstream\nendobj\n";
+ const tail="xref\n"+size+" 1\n"+String(u.length+1).padStart(10,"0")+" 00000 n \ntrailer\n<< /Size "+(size+1)+" "+root+" "+info+" /Prev "+prev+" >>\nstartxref\n"+(u.length+head.length)+"\n%%EOF\n";
+ const add=new TextEncoder().encode(head+tail),o=new Uint8Array(u.length+add.length);o.set(u);o.set(add,u.length);return o}
+function extractPdf(u){const t=lat(u),i=t.lastIndexOf(MK);if(i<0)throw 1;const re=/[A-Za-z0-9+\/=]+/y;re.lastIndex=i+MK.length;const m=re.exec(t);
+ const b=atob(m[0]),a=new Uint8Array(b.length);for(let k=0;k<b.length;k++)a[k]=b.charCodeAt(k);return JSON.parse(new TextDecoder().decode(a))}
+$("pa").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=embedPdf(new Uint8Array(r.result)),n=fname(),a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([o],{type:"application/pdf"}));a.download=n+"_with_data.pdf";document.body.appendChild(a);a.click();a.remove();msg("New PDF with your data downloaded ✓. Keep that one.")}catch(x){msg("Could not attach data to this PDF type. Use Save data (.json) instead.")}};r.readAsArrayBuffer(f)};
+$("ld").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const u=new Uint8Array(r.result);
+ if(lat(u.subarray(0,5)).startsWith("%PDF")){try{const o=extractPdf(u);restore(o);["ol","al","lg"].forEach(drawRows);msg("Loaded from PDF ✓");tab(0)}catch(x){msg("No CV data found in this PDF. Use a PDF made with \"Attach data to PDF\".")}}
+ else ldo(new TextDecoder().decode(u))};r.readAsArrayBuffer(f)};
+function tab(n){$("pgMain").hidden=!!n;$("pgSet").hidden=!n}
+const lines=id=>$(id).value.split("\n").map(x=>x.trim()).filter(Boolean);
+const opts=(list,sel,ph,suf="")=>`<option value="">${ph}</option>`+list.map(x=>`<option value="${e(x)}"${x===sel?" selected":""}>${e(x)}${suf}</option>`).join("")+(sel&&!list.includes(sel)?`<option selected>${e(sel)}</option>`:"");
+function drawRows(k){const a=k==="ol"?OL:k==="al"?AL:LG,u=k.toUpperCase(),sub=lines("set"+u+"sub"),gr=lines("set"+u+"gr");
+ $(k+"rows").innerHTML=a.map((r,i)=>`<div class="rr"><select data-k="${k}" data-i="${i}" data-f="s">${opts(sub,r.s,k==="lg"?"Language":"Subject")}</select><select class="gs" data-k="${k}" data-i="${i}" data-f="g">${opts(gr,r.g,k==="lg"?"Level %":"Grade",k==="lg"?"%":"")}</select><button type="button" class="x" data-k="${k}" data-i="${i}">×</button></div>`).join("")}
+["ol","al","lg"].forEach(k=>{const a=()=>k==="ol"?OL:k==="al"?AL:LG;
+ $(k+"add").onclick=()=>{a().push({s:"",g:""});drawRows(k);render()};
+ $(k+"rows").addEventListener("change",ev=>{const t=ev.target;if(t.dataset.f){a()[+t.dataset.i][t.dataset.f]=t.value;render()}});
+ $(k+"rows").addEventListener("click",ev=>{const t=ev.target;if(t.classList.contains("x")){a().splice(+t.dataset.i,1);drawRows(k);render()}})});
+["setOLsub","setALsub","setOLgr","setALgr","setLGsub","setLGgr"].forEach(i=>$(i).addEventListener("input",()=>{drawRows("ol");drawRows("al");drawRows("lg")}));
+$("pbirth").max=new Date().toISOString().slice(0,10);
+$("nlbtn").onclick=()=>{const n=$("nlang").value.trim();if(!n)return;let l=lines("setLGsub");let f=l.find(x=>x.toLowerCase()===n.toLowerCase());if(!f){f=n;$("setLGsub").value=l.concat(n).join("\n")}LG.push({s:f,g:""});$("nlang").value="";drawRows("lg");render()};
+$("tpl").onchange();restore();drawRows("ol");drawRows("al");drawRows("lg");pdraw();
+</script></body></html>

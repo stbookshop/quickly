@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ST BOOKSHOP - Auto Document Tool</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;background:#e7f7ff;font-family:Arial,sans-serif;color:#222}
+.app{max-width:1050px;margin:auto;background:#fff;border-top:7px solid #c9002b;border-radius:18px;padding:22px;box-shadow:0 8px 30px #0002}
+h1{margin:0;color:#c9002b}.sub{margin:7px 0 18px;color:#555}
+.drop{border:2px dashed #63c8ee;background:#f4fcff;border-radius:15px;padding:30px;text-align:center;cursor:pointer;transition:background .15s}
+.drop.over{background:#ddf7ff}
+.pick{display:inline-block;background:#c9002b;color:#fff;padding:13px 20px;border-radius:10px;font-weight:bold;cursor:pointer}
+#files{display:none}.hint{margin-top:13px;color:#c9002b;font-weight:bold}
+.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px;align-items:center}
+button{border:0;border-radius:10px;padding:12px 18px;font-weight:bold;cursor:pointer}
+.red{background:#c9002b;color:#fff}.blue{background:#79ccef;color:#111}.gray{background:#e5e5e5}
+button:disabled{opacity:.45;cursor:not-allowed}
+#status{margin-top:12px;min-height:22px;color:#c9002b;font-weight:bold;display:flex;align-items:center;gap:8px}
+.spin{width:16px;height:16px;border:3px solid #ffd7de;border-top-color:#c9002b;border-radius:50%;animation:sp 0.8s linear infinite;display:none}
+.spin.on{display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+#cvBanner{margin-top:10px;font-size:13px;padding:9px 12px;border-radius:8px;display:none}
+#cvBanner.loading{display:block;background:#fff6da;color:#8a6d00;border:1px solid #f0dd8f}
+#cvBanner.ready{display:block;background:#e6ffed;color:#166b2e;border:1px solid #b7f0c3}
+#cvBanner.failed{display:block;background:#ffe9e9;color:#a10f0f;border:1px solid #f5b8b8}
+#queue{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.tag{font-size:12px;background:#eaf9ff;border:1px solid #bce8f7;border-radius:20px;padding:6px 10px}
+#results{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin-top:18px}
+.card{background:#f5fcff;border:1px solid #bce8f6;border-radius:12px;padding:10px}.card img{width:100%;max-height:550px;object-fit:contain;background:#def3ff;border-radius:8px}.name{font-size:13px;font-weight:bold;margin-top:8px;word-break:break-all}
+.badge{font-size:12px;margin-top:6px;font-weight:bold}
+.badge.ok{color:#166b2e}.badge.fallback{color:#a15c00}.badge.manual{color:#0a5bab}
+select{padding:12px;border:2px solid #79ccef;border-radius:10px;font-weight:bold;background:#fff}
+.adjustBtn{margin-top:8px;width:100%;background:#fff3d6;color:#8a5b00;border:1px solid #eccf8f;border-radius:8px;padding:9px 10px;font-weight:bold;cursor:pointer}
+#cropModal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:9999;padding:14px}
+#cropModal.open{display:flex}
+.modalBox{background:#fff;border-radius:16px;padding:18px;max-width:96vw;max-height:96vh;overflow:auto;text-align:center}
+.modalBox h3{margin:0 0 10px;color:#c9002b}
+.modalHint{font-size:13px;color:#555;margin-bottom:10px}
+#cropCanvas{touch-action:none;border-radius:8px;background:#eee;max-width:100%;cursor:crosshair}
+.modalBtns{display:flex;gap:10px;justify-content:center;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>📄 ST BOOKSHOP</h1>
+<div class="sub">AUTO CROP • AUTO PERSPECTIVE STRAIGHTEN • ENHANCE • A4 PRINT</div>
+
+<div id="cvBanner" class="loading">⏳ Loading image engine (OpenCV)... please wait a moment before processing.</div>
+
+<input id="files" type="file" accept="image/*" multiple>
+<div id="drop" class="drop">
+<label class="pick" for="files">📁 SELECT IMAGE</label>
+<div style="margin-top:14px">or Drag & Drop image files here (from your computer's folder)</div>
+<div class="hint">📋 Copy an image → press Ctrl + V</div>
+</div>
+<div id="queue"></div>
+<div class="buttons">
+<button id="process" class="red" disabled>🚀 AUTO PROCESS</button>
+<button id="print" class="red" disabled>🖨 PRINT</button>
+<select id="orientation">
+<option value="portrait">↕ Portrait</option>
+<option value="landscape">↔ Landscape</option>
+</select>
+<button id="download" class="blue" disabled>⬇ DOWNLOAD</button>
+<button id="clear" class="gray">🗑 CLEAR</button>
+</div>
+<div id="status"><span class="spin" id="spin"></span><span id="statusText"></span></div>
+<div id="results"></div>
+</div>
+
+<div id="cropModal">
+  <div class="modalBox">
+    <h3>✏️ Adjust Crop Corners</h3>
+    <div class="modalHint">රතු තිත් 4 paper එකේ හරියටම කොන් 4ට drag කරන්න, ඊට පස්සේ "Apply Crop" click කරන්න.</div>
+    <canvas id="cropCanvas"></canvas>
+    <div class="modalBtns">
+      <button id="cropApply" class="red">✅ Apply Crop</button>
+      <button id="cropReset" class="blue">↺ Reset to Full Image</button>
+      <button id="cropCancel" class="gray">✖ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+let files=[], results=[], cvReady=false, cvFailed=false;
+
+function msg(t,spinning){$("statusText").textContent=t||"";$("spin").className="spin"+(spinning?" on":"")}
+
+// ---------- Load OpenCV.js reliably (fixes the "async race condition" bug) ----------
+function loadOpenCV(){
+  const s=document.createElement("script");
+  s.src="https://docs.opencv.org/4.x/opencv.js";
+  s.onerror=()=>{
+    cvFailed=true;
+    const b=$("cvBanner");
+    b.className="failed";
+    b.textContent="⚠️ Could not load the image engine (check your internet connection). The tool will still crop/enhance images, but automatic perspective straightening will be skipped.";
+  };
+  document.head.appendChild(s);
+  // cv.js calls Module.onRuntimeInitialized when it's actually usable
+  const check=setInterval(()=>{
+    if(typeof cv!=="undefined" && cv.Mat){
+      clearInterval(check);
+      cvReady=true;
+      const b=$("cvBanner");
+      b.className="ready";
+      b.textContent="✅ Image engine ready. You can process images now.";
+      setTimeout(()=>{b.style.display="none"},2500);
+    }
+  },200);
+  // give up after 20s
+  setTimeout(()=>{
+    if(!cvReady && !cvFailed){
+      clearInterval(check);
+      cvFailed=true;
+      const b=$("cvBanner");
+      b.className="failed";
+      b.textContent="⚠️ Image engine took too long to load. Cropping will use a simple fallback instead of auto perspective-straighten.";
+    }
+  },20000);
+}
+loadOpenCV();
+
+// ---------- File intake ----------
+function addFiles(list){
+  const a=[...list].filter(f=>f && f.type.startsWith("image/"));
+  if(!a.length){msg("❌ Image එකක් select කරන්න (image file එකක් නොවේ).");return}
+  files.push(...a); renderQueue(); $("process").disabled=false;
+  msg(files.length+" image(s) ready.");
+}
+function renderQueue(){
+  $("queue").innerHTML=files.map((f,i)=>`<span class="tag">${i+1}. ${f.name}</span>`).join("");
+}
+$("files").onchange=e=>{addFiles(e.target.files);e.target.value=""};
+
+const dropEl=$("drop");
+dropEl.ondragover=e=>{e.preventDefault();dropEl.classList.add("over")};
+dropEl.ondragleave=()=>{dropEl.classList.remove("over")};
+dropEl.ondrop=e=>{
+  e.preventDefault();dropEl.classList.remove("over");
+  const dt=e.dataTransfer;
+  if(dt && dt.files && dt.files.length){
+    addFiles(dt.files);
+  }else{
+    msg("❌ Drag කරපු item එකේ real file එකක් හමු වුනේ නෑ. කරුණාකර image එක Computer එකේ folder එකකට save කරලා, ඒ file එක drag කරන්න — නැත්නම් 'SELECT IMAGE' button එක පාවිච්චි කරන්න.");
+  }
+};
+// Clicking anywhere on the drop zone (not just the button) also opens the picker
+dropEl.addEventListener("click",e=>{
+  if(e.target.tagName!=="LABEL") $("files").click();
+});
+
+document.addEventListener("paste",e=>{
+  const a=[];
+  [...(e.clipboardData?.items||[])].forEach(x=>{
+    if(x.kind==="file"&&x.type.startsWith("image/")){
+      const b=x.getAsFile(); if(b)a.push(new File([b],"Pasted_Image_"+Date.now()+".png",{type:b.type||"image/png"}));
+    }
+  });
+  if(a.length){e.preventDefault();addFiles(a)}
+});
+
+// ---------- Image processing ----------
+function load(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>res({i,u});i.onerror=rej;i.src=u})}
+function canvasFromImage(img,w,h){
+  const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);return c
+}
+function order(p){
+  const sum=p.map(q=>q.x+q.y), diff=p.map(q=>q.x-q.y);
+  return [p[sum.indexOf(Math.min(...sum))],p[diff.indexOf(Math.max(...diff))],p[sum.indexOf(Math.max(...sum))],p[diff.indexOf(Math.min(...diff))]]
+}
+
+function defaultQuad(w,h){
+  return [{x:w*0.04,y:h*0.04},{x:w*0.96,y:h*0.04},{x:w*0.96,y:h*0.96},{x:w*0.04,y:h*0.96}];
+}
+
+// Detect the best 4-corner page quad on a working canvas. Returns {quad, ok}.
+// ok=false means detection wasn't confident - caller should fall back to a default quad
+// (full image) that the user can then drag-adjust manually.
+function detectQuad(c){
+  const w=c.width,h=c.height;
+  if(!cvReady || typeof cv==="undefined" || !cv.Mat) return {quad:defaultQuad(w,h),ok:false};
+  let src=null,gray=null,bw=null,contours=null,hier=null,best=null,bestArea=0;
+  try{
+    src=cv.imread(c); gray=new cv.Mat(); bw=new cv.Mat(); contours=new cv.MatVector(); hier=new cv.Mat();
+    cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+    cv.GaussianBlur(gray,gray,new cv.Size(5,5),0);
+    cv.threshold(gray,bw,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU);
+    const kernel=cv.Mat.ones(15,15,cv.CV_8U);
+    cv.morphologyEx(bw,bw,cv.MORPH_CLOSE,kernel);
+    kernel.delete();
+    cv.findContours(bw,contours,hier,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE);
+
+    for(let n=0;n<contours.size();n++){
+      const cnt=contours.get(n), area=Math.abs(cv.contourArea(cnt));
+      if(area<w*h*.20){cnt.delete();continue}
+      const peri=cv.arcLength(cnt,true), ap=new cv.Mat();
+      cv.approxPolyDP(cnt,ap,.02*peri,true);
+      if(ap.rows===4 && area>bestArea){
+        best=[];
+        for(let j=0;j<4;j++){const q=ap.intPtr(j,0);best.push({x:q[0],y:q[1]})}
+        bestArea=area;
+      }
+      ap.delete();cnt.delete();
+    }
+    src.delete();gray.delete();bw.delete();contours.delete();hier.delete();
+    if(!best || bestArea<w*h*.45) return {quad:defaultQuad(w,h),ok:false};
+    return {quad:order(best),ok:true};
+  }catch(e){
+    try{src?.delete();gray?.delete();bw?.delete();contours?.delete();hier?.delete()}catch(_){}
+    return {quad:defaultQuad(w,h),ok:false};
+  }
+}
+
+// Simple axis-aligned bounding-box crop, used as a fallback when OpenCV isn't available.
+function boundingCrop(c,quad){
+  const xs=quad.map(p=>p.x), ys=quad.map(p=>p.y);
+  const minX=Math.max(0,Math.min(...xs)), maxX=Math.min(c.width,Math.max(...xs));
+  const minY=Math.max(0,Math.min(...ys)), maxY=Math.min(c.height,Math.max(...ys));
+  const w=Math.max(1,Math.round(maxX-minX)), h=Math.max(1,Math.round(maxY-minY));
+  const out=document.createElement("canvas");out.width=w;out.height=h;
+  out.getContext("2d").drawImage(c,minX,minY,w,h,0,0,w,h);
+  return out;
+}
+
+// Warp a canvas using an explicit quad (auto-detected OR manually adjusted by the user).
+function warpQuad(c,quad){
+  if(!cvReady || typeof cv==="undefined" || !cv.Mat) return boundingCrop(c,quad);
+  try{
+    const p=order(quad);
+    const W=Math.max(2,Math.round(Math.max(Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),Math.hypot(p[2].x-p[3].x,p[2].y-p[3].y))));
+    const H=Math.max(2,Math.round(Math.max(Math.hypot(p[3].x-p[0].x,p[3].y-p[0].y),Math.hypot(p[2].x-p[1].x,p[2].y-p[1].y))));
+    const src=cv.imread(c);
+    const sp=cv.matFromArray(4,1,cv.CV_32FC2,[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y]);
+    const dp=cv.matFromArray(4,1,cv.CV_32FC2,[0,0,W-1,0,W-1,H-1,0,H-1]);
+    const M=cv.getPerspectiveTransform(sp,dp), dst=new cv.Mat();
+    cv.warpPerspective(src,dst,M,new cv.Size(W,H),cv.INTER_CUBIC,cv.BORDER_REPLICATE);
+    const out=document.createElement("canvas");out.width=W;out.height=H;cv.imshow(out,dst);
+    src.delete();sp.delete();dp.delete();M.delete();dst.delete();
+    return out;
+  }catch(e){
+    return boundingCrop(c,quad);
+  }
+}
+
+function enhance(c){
+  const out=document.createElement("canvas"),scale=Math.min(1,2600/Math.max(c.width,c.height));
+  out.width=Math.round(c.width*scale);out.height=Math.round(c.height*scale);
+  const x=out.getContext("2d",{willReadFrequently:true});x.drawImage(c,0,0,out.width,out.height);
+  const d=x.getImageData(0,0,out.width,out.height),p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    p[i]=Math.max(0,Math.min(255,128+(p[i]-128)*1.08));
+    p[i+1]=Math.max(0,Math.min(255,128+(p[i+1]-128)*1.08));
+    p[i+2]=Math.max(0,Math.min(255,128+(p[i+2]-128)*1.08));
+  }
+  x.putImageData(d,0,0);return out;
+}
+
+function renderCard(idx){
+  const r=results[idx];
+  const card=document.createElement("div");card.className="card";card.id="card_"+idx;
+  let badge;
+  if(r.status==="manual") badge=`<div class="badge manual">✏️ Manually adjusted crop</div>`;
+  else if(r.status==="ok") badge=`<div class="badge ok">✅ AUTO CROP + PERSPECTIVE STRAIGHTEN + ENHANCE</div>`;
+  else badge=`<div class="badge fallback">⚠️ Page edges not confidently detected — tap "Adjust Crop" below to fix manually</div>`;
+  card.innerHTML=`<img src="${r.data}"><div class="name">${r.name}</div>${badge}<button class="adjustBtn" data-idx="${idx}">✏️ Adjust Crop</button>`;
+  $("results").appendChild(card);
+  card.querySelector(".adjustBtn").onclick=()=>openCropModal(idx);
+}
+
+$("process").onclick=async()=>{
+  $("process").disabled=true;$("print").disabled=true;$("download").disabled=true;results=[];$("results").innerHTML="";
+  for(let n=0;n<files.length;n++){
+    msg("Straightening "+(n+1)+" / "+files.length+"...",true);
+    const z=await load(files[n]);
+    const maxSide=1500, s=Math.min(1,maxSide/Math.max(z.i.naturalWidth,z.i.naturalHeight));
+    const w=Math.max(1,Math.round(z.i.naturalWidth*s)), h=Math.max(1,Math.round(z.i.naturalHeight*s));
+    const workingCanvas=canvasFromImage(z.i,w,h);
+    URL.revokeObjectURL(z.u);
+    const {quad,ok}=detectQuad(workingCanvas);
+    const cropped=ok?warpQuad(workingCanvas,quad):workingCanvas;
+    const fixed=enhance(cropped);
+    const data=fixed.toDataURL("image/jpeg",.95);
+    results.push({
+      data,
+      name:files[n].name.replace(/\.[^.]+$/,"")+"_ST_BOOKSHOP.jpg",
+      workingCanvas,
+      quad,
+      status: ok?"ok":"fallback"
+    });
+    renderCard(results.length-1);
+  }
+  $("process").disabled=false;$("print").disabled=!results.length;$("download").disabled=!results.length;
+  msg("✅ "+results.length+" image(s) processed.",false);
+};
+
+// ---------- Manual crop-corner adjustment modal ----------
+let editingIndex=-1, dragHandle=-1, modalScale=1, modalQuad=null;
+const cropCanvas=$("cropCanvas"), cropCtx=cropCanvas.getContext("2d");
+
+function openCropModal(idx){
+  editingIndex=idx;
+  const r=results[idx];
+  modalQuad=r.quad.map(p=>({x:p.x,y:p.y}));
+  const maxW=Math.min(window.innerWidth*0.86,900), maxH=window.innerHeight*0.62;
+  modalScale=Math.min(1,maxW/r.workingCanvas.width,maxH/r.workingCanvas.height);
+  cropCanvas.width=Math.round(r.workingCanvas.width*modalScale);
+  cropCanvas.height=Math.round(r.workingCanvas.height*modalScale);
+  drawModal();
+  $("cropModal").classList.add("open");
+}
+function drawModal(){
+  const r=results[editingIndex];
+  cropCtx.clearRect(0,0,cropCanvas.width,cropCanvas.height);
+  cropCtx.drawImage(r.workingCanvas,0,0,cropCanvas.width,cropCanvas.height);
+  const pts=modalQuad.map(p=>({x:p.x*modalScale,y:p.y*modalScale}));
+  cropCtx.strokeStyle="#c9002b";cropCtx.lineWidth=2.5;
+  cropCtx.beginPath();
+  pts.forEach((p,i)=>i===0?cropCtx.moveTo(p.x,p.y):cropCtx.lineTo(p.x,p.y));
+  cropCtx.closePath();cropCtx.stroke();
+  cropCtx.fillStyle="#c9002b22";cropCtx.fill();
+  pts.forEach(p=>{
+    cropCtx.beginPath();cropCtx.arc(p.x,p.y,10,0,7);
+    cropCtx.fillStyle="#fff";cropCtx.fill();
+    cropCtx.lineWidth=3;cropCtx.strokeStyle="#c9002b";cropCtx.stroke();
+  });
+}
+function pointerPos(e){
+  const rect=cropCanvas.getBoundingClientRect();
+  const cx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+  const cy=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+  return {x:cx*(cropCanvas.width/rect.width),y:cy*(cropCanvas.height/rect.height)};
+}
+cropCanvas.addEventListener("pointerdown",e=>{
+  const pos=pointerPos(e);
+  let best=-1,bestD=22;
+  modalQuad.forEach((p,i)=>{
+    const d=Math.hypot(p.x*modalScale-pos.x,p.y*modalScale-pos.y);
+    if(d<bestD){bestD=d;best=i}
+  });
+  dragHandle=best;
+  cropCanvas.setPointerCapture(e.pointerId);
+});
+cropCanvas.addEventListener("pointermove",e=>{
+  if(dragHandle<0) return;
+  const pos=pointerPos(e);
+  const r=results[editingIndex];
+  modalQuad[dragHandle]={
+    x:Math.max(0,Math.min(r.workingCanvas.width,pos.x/modalScale)),
+    y:Math.max(0,Math.min(r.workingCanvas.height,pos.y/modalScale))
+  };
+  drawModal();
+});
+window.addEventListener("pointerup",()=>{dragHandle=-1});
+
+$("cropReset").onclick=()=>{
+  const r=results[editingIndex];
+  modalQuad=defaultQuad(r.workingCanvas.width,r.workingCanvas.height);
+  drawModal();
+};
+$("cropCancel").onclick=()=>{$("cropModal").classList.remove("open");editingIndex=-1};
+$("cropApply").onclick=()=>{
+  const r=results[editingIndex];
+  const orderedQuad=order(modalQuad);
+  const cropped=warpQuad(r.workingCanvas,orderedQuad);
+  const fixed=enhance(cropped);
+  r.data=fixed.toDataURL("image/jpeg",.95);
+  r.quad=orderedQuad;
+  r.status="manual";
+  const oldCard=$("card_"+editingIndex);
+  if(oldCard) oldCard.remove();
+  renderCard(editingIndex);
+  $("cropModal").classList.remove("open");
+  editingIndex=-1;
+};
+$("download").onclick=()=>results.forEach(x=>{const a=document.createElement("a");a.href=x.data;a.download=x.name;document.body.appendChild(a);a.click();a.remove()});
+$("clear").onclick=()=>{files=[];results=[];$("queue").innerHTML="";$("results").innerHTML="";$("process").disabled=true;$("print").disabled=true;$("download").disabled=true;msg("Cleared.",false)};
+
+$("print").onclick=()=>{
+  if(!results.length) return;
+  const orientation=$("orientation").value;
+
+  let area=document.getElementById("printArea");
+  if(!area){
+    area=document.createElement("div");
+    area.id="printArea";
+    document.body.appendChild(area);
+  }
+  area.innerHTML=results.map(x=>`<div class="printPage"><img src="${x.data}"></div>`).join("");
+
+  let ps=document.getElementById("dynamicPrintStyle");
+  if(!ps){
+    ps=document.createElement("style");
+    ps.id="dynamicPrintStyle";
+    document.head.appendChild(ps);
+  }
+  ps.textContent=`
+    @media print{
+      @page{size:A4 ${orientation};margin:10mm}
+      html,body{margin:0!important;padding:0!important;background:#fff!important}
+      body>*:not(#printArea){display:none!important}
+      #printArea{display:block!important;width:100%!important}
+      .printPage{
+        width:${orientation==="landscape"?"297mm":"210mm"}!important;
+        height:${orientation==="landscape"?"210mm":"297mm"}!important;
+        margin:0!important;
+        padding:0!important;
+        box-sizing:border-box!important;
+        display:block!important;
+        overflow:hidden!important;
+        page-break-after:always!important;
+        break-after:page!important;
+      }
+      .printPage img{
+        display:block!important;
+        width:100%!important;
+        height:100%!important;
+        max-width:none!important;
+        max-height:none!important;
+        object-fit:fill!important;
+      }
+    }
+    @media screen{
+      #printArea{display:none}
+    }
+  `;
+
+  const imgs=[...area.querySelectorAll("img")];
+  Promise.all(imgs.map(im=>im.complete?Promise.resolve():new Promise(r=>{
+    im.onload=im.onerror=r;
+  }))).then(()=>{
+    setTimeout(()=>window.print(),100);
+  });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<title>දෛනික වැඩ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@500;700&family=Noto+Sans+Sinhala:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF2EC;
+    --paper-line:#B9CBB9;
+    --ink:#1E2A22;
+    --ink-soft:#4B5A4F;
+    --ledger-green:#2F6B4F;
+    --ledger-green-dark:#1E4A36;
+    --rust-dark:#7C2F1E;
+    --gold:#A9782E;
+    --card:#F7F9F5;
+    --border:#CBD6C7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:linear-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size:100% 42px;
+    font-family:'Noto Sans Sinhala', sans-serif;
+    color:var(--ink);
+    padding:0 0 4rem;
+  }
+  .wrap{max-width:1400px;margin:0 auto;padding:2rem 2rem;}
+  .save-error-bar{
+    display:none;
+    align-items:center;
+    gap:.7rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    background:#7C2F1E;
+    color:#fff;
+    font-size:.85rem;
+    font-weight:600;
+    padding:.6rem 1rem;
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+  .save-error-bar button{
+    background:#fff;
+    color:#7C2F1E;
+    border:none;
+    border-radius:14px;
+    padding:.3rem .8rem;
+    font-size:.78rem;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .save-error-bar button:hover{opacity:.9;}
+  h1{
+    font-family:'Noto Serif Sinhala', serif;
+    font-weight:700;
+    font-size:2.1rem;
+    margin:0;
+    letter-spacing:1px;
+    text-align:center;
+    background:linear-gradient(90deg,#E0473B,#F0932B,#F6C445,#3FA35D,#2E86C1,#8E44AD);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .subtitle{
+    font-family:'Noto Sans Sinhala', sans-serif;
+    font-size:.95rem;
+    color:var(--ink-soft);
+    text-align:center;
+    margin:.2rem 0 1.2rem;
+    padding-bottom:1rem;
+    position:relative;
+  }
+  .subtitle::after{
+    content:"";
+    display:block;
+    height:5px;
+    margin-top:.8rem;
+    border-radius:3px;
+    background:linear-gradient(90deg,#E0473B,#F0932B,#F6C445,#3FA35D,#2E86C1,#8E44AD);
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1.2rem 1.3rem;
+  }
+  .adv-scroll{overflow-x:auto;}
+  .adv-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:760px;}
+  .adv-table th, .adv-table td{
+    border:1px solid var(--ink);
+    padding:.4rem .4rem;
+    text-align:center;
+    vertical-align:middle;
+  }
+  .adv-table th{
+    background:linear-gradient(90deg,#FBE0DE,#FCEBD6,#FDF6D8,#E2F3E5,#DCEBF7,#EBE0F3);
+    font-weight:700;
+    font-size:.75rem;
+    color:var(--ink);
+    line-height:1.3;
+  }
+  .adv-table tbody tr:nth-child(6n+1){background:#FDF3F2;}
+  .adv-table tbody tr:nth-child(6n+2){background:#FDF8EE;}
+  .adv-table tbody tr:nth-child(6n+3){background:#FBFAE9;}
+  .adv-table tbody tr:nth-child(6n+4){background:#EEF7EF;}
+  .adv-table tbody tr:nth-child(6n+5){background:#EAF3FA;}
+  .adv-table tbody tr:nth-child(6n+6){background:#F3EEF7;}
+  .adv-table td.no{width:38px;color:var(--ink-soft);font-size:.8rem;background:#F7F9F5;}
+  .adv-table td.chk{width:44px;}
+  .adv-table td.del-cell{width:34px;}
+  .adv-table input[type="text"], .adv-table input[type="number"], .adv-table textarea{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:3px;
+    background:#fff;
+    font-family:'Noto Sans Sinhala', sans-serif;
+    font-size:.85rem;
+    padding:.4rem .3rem;
+    color:var(--rust-dark);
+    text-align:left;
+    min-height:2rem;
+  }
+  .adv-table textarea{
+    resize:none;
+    overflow:hidden;
+    white-space:normal;
+    word-break:break-word;
+    line-height:1.3;
+    font-family:'Noto Sans Sinhala', sans-serif;
+  }
+  .adv-table input:focus{outline:2px solid var(--ledger-green);outline-offset:-2px;background:#fff;}
+  .adv-table input[type="checkbox"]{width:14px;height:14px;cursor:pointer;vertical-align:middle;}
+  .adv-table td:nth-child(5) input, .adv-table td:nth-child(6) input{text-align:right;}
+  .remaining-cell{font-weight:600;color:var(--rust-dark);text-align:right;}
+  .rem-amt{font-size:.9rem;}
+  .remaining-cell.is-paid .rem-amt{text-decoration:line-through;color:var(--ink-soft);}
+  .paid-lbl{
+    display:flex;align-items:center;gap:.25rem;
+    justify-content:flex-end;
+    font-size:.62rem;
+    font-weight:700;
+    letter-spacing:.3px;
+    cursor:pointer;
+    margin-top:.2rem;
+  }
+  .paid-lbl.is-paid-lbl{color:var(--ledger-green-dark);}
+  .paid-lbl.is-unpaid-lbl{color:var(--rust-dark);}
+  .paid-date{
+    font-size:.62rem;
+    color:var(--ledger-green-dark);
+    background:#E4EFE7;
+    border-radius:3px;
+    padding:.1rem .35rem;
+    margin-top:.2rem;
+    font-weight:600;
+    display:inline-block;
+  }
+  .deliver-lbl{
+    display:flex;align-items:center;gap:.3rem;
+    justify-content:center;
+    font-size:.68rem;
+    font-weight:700;
+    letter-spacing:.3px;
+    cursor:pointer;
+  }
+  .deliver-lbl.is-delivered{color:var(--ledger-green-dark);}
+  .deliver-lbl.is-pending{color:var(--rust-dark);}
+  .deliver-date{
+    font-size:.68rem;
+    color:var(--ledger-green-dark);
+    background:#E4EFE7;
+    border-radius:3px;
+    padding:.1rem .35rem;
+    margin-top:.25rem;
+    font-weight:600;
+    display:inline-block;
+  }
+  .rowdel{
+    background:none;border:none;color:var(--ink-soft);
+    cursor:pointer;font-size:.95rem;padding:0;width:auto;
+  }
+  .rowdel:hover{color:var(--rust-dark);}
+  .add-row-btn{
+    margin-top:1rem;
+    font-family:inherit;
+    font-size:.85rem;
+    padding:.6rem 1.2rem;
+    border-radius:20px;
+    border:none;
+    background:linear-gradient(90deg,#E0473B,#F0932B,#3FA35D,#2E86C1);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .add-row-btn:hover{filter:brightness(1.08);}
+
+  .report-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:.6rem;
+    margin-bottom:1rem;
+  }
+  .report-bar select{
+    padding:.4rem .6rem;
+    border:1px solid var(--border);
+    border-radius:4px;
+    font-family:inherit;
+    font-size:.85rem;
+    background:#fff;
+  }
+  .pdf-btn{
+    font-family:inherit;
+    font-size:.82rem;
+    padding:.5rem 1rem;
+    border-radius:20px;
+    border:none;
+    background:linear-gradient(90deg,#2E86C1,#8E44AD);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .pdf-btn:hover{filter:brightness(1.08);}
+  .print-title{display:none;}
+  .autosave-status{
+    font-size:.75rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    padding:.3rem .6rem;
+    border-radius:12px;
+    background:#fff;
+    border:1px solid var(--border);
+  }
+  .autosave-status.on{color:var(--ledger-green-dark);}
+  .autosave-note{
+    font-size:.78rem;
+    color:var(--ledger-green-dark);
+    font-weight:600;
+  }
+  .bottom-bar{
+    margin-top:1.5rem;
+    padding-top:1.2rem;
+    border-top:1px dashed var(--border);
+    display:flex;
+    flex-direction:column;
+    gap:.7rem;
+  }
+  .bottom-bar-row{
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .totals-bar{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+    gap:.7rem;
+    margin-top:1.2rem;
+  }
+  .totals-bar .tbox{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:.7rem .8rem;
+    text-align:center;
+  }
+  .totals-bar .tbox .tlbl{font-size:.7rem;color:var(--ink-soft);margin-bottom:.25rem;}
+  .totals-bar .tbox .tval{font-family:'Noto Serif Sinhala',serif;font-weight:700;font-size:1.1rem;}
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .no-print{display:none !important;}
+    .card{border:none;padding:0;}
+    .subtitle::after{display:none;}
+    h1, .subtitle{display:none;}
+    .print-title{
+      display:block;
+      font-family:'Noto Serif Sinhala', serif;
+      font-weight:700;
+      font-size:1.3rem;
+      text-align:center;
+      margin-bottom:1rem;
+      color:#000;
+    }
+    .adv-table{min-width:0;font-size:.75rem;}
+    .adv-table th{background:#eee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .adv-table tbody tr{background:#fff !important;}
+    .adv-table input, .adv-table textarea{
+      border:none;background:transparent;color:#000;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+    .deliver-lbl.is-delivered{color:#1E4A36;}
+    .deliver-lbl.is-pending{color:#7C2F1E;}
+    .deliver-date{background:#eee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .paid-lbl.is-paid-lbl{color:#1E4A36;}
+    .paid-lbl.is-unpaid-lbl{color:#7C2F1E;}
+    .paid-date{background:#eee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div id="saveErrorBar" class="save-error-bar no-print">
+  ⚠️ Save වීමේ ගැටලුවක්! Data server එකට save වුනේ නෑ.
+  <button type="button" id="retrySaveBtn">නැවත Try කරන්න</button>
+  <span style="opacity:.85;">— ආරක්ෂිත වීමට "Backup Download" බොත්තමත් ඔබන්න</span>
+</div>
+<div class="wrap">
+  <h1>ST BOOKSHOP</h1>
+  <div class="subtitle">දෛනික වැඩ</div>
+  <div class="card">
+    <div class="report-bar no-print">
+      <div>
+        <label for="monthFilter" style="font-size:.8rem;color:var(--ink-soft);margin-right:.4rem;">මාසය:</label>
+        <select id="monthFilter"><option value="all">සියල්ල</option></select>
+      </div>
+      <span class="autosave-note">✅ Data ඔක්කොම auto-ම save වෙනවා — button එකක් ඔබන්න ඕන නෑ</span>
+    </div>
+    <div class="print-title">ST BOOKSHOP — <span id="printMonthLabel">සියලුම වාර්තා</span></div>
+    <div class="adv-scroll">
+      <table class="adv-table">
+        <thead>
+          <tr>
+            <th style="width:38px;">අනු අංකය</th>
+            <th style="width:90px;">දිනය<br><span style="font-weight:400;">(භාර ගත්)</span></th>
+            <th>නම</th>
+            <th>කාරණය</th>
+            <th>මුදල</th>
+            <th>අත්තිකාරම් මුදල</th>
+            <th>ගෙවීමට ඇති ඉතිරි මුදල</th>
+            <th style="width:110px;">DELIVERED</th>
+            <th style="width:34px;" class="no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="advTableBody"></tbody>
+      </table>
+    </div>
+    <div class="totals-bar" id="totalsBar"></div>
+    <button type="button" class="add-row-btn no-print" id="addRowBtn">+ පේළියක් එකතු කරන්න</button>
+
+    <div class="bottom-bar no-print">
+      <div class="bottom-bar-row">
+        <span id="autoSaveStatus" class="autosave-status">🔴 PC File Auto-Save OFF</span>
+        <button type="button" id="autoSaveBtn" class="pdf-btn" style="background:linear-gradient(90deg,#3FA35D,#2E86C1);">🔗 PC File එකට Auto-Save සකසන්න</button>
+      </div>
+      <div class="bottom-bar-row">
+        <button type="button" id="backupBtn" class="pdf-btn" style="background:linear-gradient(90deg,#3FA35D,#2E86C1);opacity:.85;">💾 Backup Download කරන්න</button>
+        <button type="button" id="restoreBtn" class="pdf-btn" style="background:linear-gradient(90deg,#F0932B,#8E44AD);">📂 PC එකෙන් Load කරන්න</button>
+        <input type="file" id="restoreFile" accept=".json" style="display:none;">
+        <button type="button" id="pdfBtn" class="pdf-btn">🖨️ PDF ලෙස Save කරන්න</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADV_KEY = 'wada-potha-advtable';
+const INITIAL_ROWS = 10;
+let advRows = [];
+let saveTimer = null;
+let autoSaveFileHandle = null;
+let autoSaveWriteTimer = null;
+
+function makeId(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+function blankRow(){
+  return {id: makeId(), dateTaken: '', dateISO: '', name: '', reason: '', amount: '', advance: '', remaining: '', delivered: false, deliveredDate: '', paid: false, paidDate: ''};
+}
+
+async function storageGet(key){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw === null ? null : {value: raw};
+  }catch(e){
+    return null;
+  }
+}
+
+async function storageSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+    return {key, value};
+  }catch(e){
+    console.error('localStorage set failed', e);
+    return null;
+  }
+}
+
+async function loadAll(){
+  try{
+    const res = await storageGet(ADV_KEY);
+    advRows = res ? JSON.parse(res.value) : [];
+  }catch(e){
+    advRows = [];
+  }
+  if(advRows.length === 0){
+    for(let i = 0; i < INITIAL_ROWS; i++) advRows.push(blankRow());
+    await saveAdvRows();
+  }
+  populateMonthFilter();
+  renderAdvTable();
+}
+
+async function saveAdvRows(){
+  const maxAttempts = 3;
+  for(let attempt = 1; attempt <= maxAttempts; attempt++){
+    try{
+      const result = await storageSet(ADV_KEY, JSON.stringify(advRows));
+      if(result){
+        hideSaveError();
+        queueAutoSaveWrite();
+        return;
+      }
+      throw new Error('empty result');
+    }catch(e){
+      console.error('save attempt ' + attempt + ' failed', e);
+      if(attempt < maxAttempts){
+        await new Promise(res => setTimeout(res, attempt * 800));
+      }else{
+        showSaveError();
+      }
+    }
+  }
+  queueAutoSaveWrite();
+}
+
+function showSaveError(){
+  const bar = document.getElementById('saveErrorBar');
+  if(bar) bar.style.display = 'flex';
+}
+
+function hideSaveError(){
+  const bar = document.getElementById('saveErrorBar');
+  if(bar) bar.style.display = 'none';
+}
+
+function queueAutoSaveWrite(){
+  if(!autoSaveFileHandle) return;
+  clearTimeout(autoSaveWriteTimer);
+  autoSaveWriteTimer = setTimeout(writeAutoSaveFile, 300);
+}
+
+async function writeAutoSaveFile(){
+  if(!autoSaveFileHandle) return;
+  try{
+    const perm = await autoSaveFileHandle.queryPermission({mode: 'readwrite'});
+    if(perm !== 'granted'){
+      const req = await autoSaveFileHandle.requestPermission({mode: 'readwrite'});
+      if(req !== 'granted') return;
+    }
+    const writable = await autoSaveFileHandle.createWritable();
+    await writable.write(JSON.stringify(advRows, null, 2));
+    await writable.close();
+    setAutoSaveStatus(true);
+  }catch(e){
+    console.error('auto-save write failed', e);
+    setAutoSaveStatus(false, true);
+  }
+}
+
+function setAutoSaveStatus(on, error){
+  const el = document.getElementById('autoSaveStatus');
+  if(!el) return;
+  if(error){
+    el.textContent = '⚠️ Auto-save Error';
+    el.classList.remove('on');
+  }else if(on){
+    el.textContent = '🟢 Auto-save ON (' + (autoSaveFileHandle ? autoSaveFileHandle.name : '') + ')';
+    el.classList.add('on');
+  }else{
+    el.textContent = '🔴 Auto-save OFF';
+    el.classList.remove('on');
+  }
+}
+
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveAdvRows, 400);
+}
+
+function escapeAttr(s){
+  return String(s == null ? '' : s).replace(/"/g, '&quot;');
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function calcRemaining(r){
+  const amount = parseFloat(r.amount);
+  const advance = parseFloat(r.advance);
+  if(isNaN(amount) && isNaN(advance)) return '';
+  const rem = (isNaN(amount) ? 0 : amount) - (isNaN(advance) ? 0 : advance);
+  return rem.toLocaleString('en-IN');
+}
+
+function calcRemainingNum(r){
+  const amount = parseFloat(r.amount);
+  const advance = parseFloat(r.advance);
+  return (isNaN(amount) ? 0 : amount) - (isNaN(advance) ? 0 : advance);
+}
+
+function formatMoney(n){
+  const sign = n < 0 ? '-' : '';
+  return sign + 'රු. ' + Math.abs(Math.round(n)).toLocaleString('en-IN');
+}
+
+function autoResize(el){
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function initTextareas(){
+  document.querySelectorAll('#advTableBody textarea').forEach(autoResize);
+}
+
+function renderAdvTable(){
+  const body = document.getElementById('advTableBody');
+  const filterVal = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : 'all';
+  const rowsToShow = filterVal === 'all' ? advRows : advRows.filter(r => (r.dateISO || '').slice(0,7) === filterVal);
+
+  renderTotals(rowsToShow);
+
+  if(rowsToShow.length === 0){
+    body.innerHTML = '<tr><td colspan="9" style="border:1px solid var(--ink);padding:1rem;color:var(--ink-soft);">මේ මාසයට වාර්තා නැත.</td></tr>';
+    return;
+  }
+  body.innerHTML = rowsToShow.map((r, i) => `
+    <tr data-id="${r.id}">
+      <td class="no">${i + 1}</td>
+      <td><input type="text" data-field="dateTaken" value="${escapeAttr(r.dateTaken)}" style="text-align:center;font-size:.75rem;"></td>
+      <td><textarea data-field="name" rows="1">${escapeHtml(r.name)}</textarea></td>
+      <td><textarea data-field="reason" rows="1">${escapeHtml(r.reason)}</textarea></td>
+      <td><input type="text" data-field="amount" value="${escapeAttr(r.amount)}"></td>
+      <td><input type="text" data-field="advance" value="${escapeAttr(r.advance)}"></td>
+      <td class="remaining-cell ${r.paid ? 'is-paid' : ''}">
+        <div class="rem-amt">${calcRemaining(r)}</div>
+        <label class="paid-lbl ${r.paid ? 'is-paid-lbl' : 'is-unpaid-lbl'}"><input type="checkbox" data-field="paid" ${r.paid ? 'checked' : ''}> ${r.paid ? 'PAID' : 'UNPAID'}</label>
+        ${r.paid && r.paidDate ? `<div class="paid-date">${r.paidDate}</div>` : ''}
+      </td>
+      <td class="chk">
+        <label class="deliver-lbl ${r.delivered ? 'is-delivered' : 'is-pending'}"><input type="checkbox" data-field="delivered" ${r.delivered ? 'checked' : ''}> ${r.delivered ? 'DELIVERED' : 'PENDING'}</label>
+        ${r.delivered && r.deliveredDate ? `<div class="deliver-date">${r.deliveredDate}</div>` : ''}
+      </td>
+      <td class="del-cell no-print"><button class="rowdel" title="මකන්න" data-del="${r.id}">✕</button></td>
+    </tr>
+  `).join('');
+  initTextareas();
+}
+
+function renderTotals(rows){
+  const bar = document.getElementById('totalsBar');
+  if(!bar) return;
+  let totalAmount = 0, totalAdvance = 0, totalRemaining = 0, totalOutstanding = 0;
+  rows.forEach(r => {
+    const amt = parseFloat(r.amount);
+    const adv = parseFloat(r.advance);
+    if(!isNaN(amt)) totalAmount += amt;
+    if(!isNaN(adv)) totalAdvance += adv;
+    const rem = calcRemainingNum(r);
+    totalRemaining += rem;
+    if(!r.paid) totalOutstanding += rem;
+  });
+  bar.innerHTML = `
+    <div class="tbox"><div class="tlbl">මුළු මුදල</div><div class="tval" style="color:var(--ink)">${formatMoney(totalAmount)}</div></div>
+    <div class="tbox"><div class="tlbl">මුළු අත්තිකාරම්</div><div class="tval" style="color:var(--gold)">${formatMoney(totalAdvance)}</div></div>
+    <div class="tbox"><div class="tlbl">මුළු ඉතිරි මුදල</div><div class="tval" style="color:var(--rust-dark)">${formatMoney(totalRemaining)}</div></div>
+    <div class="tbox"><div class="tlbl">තවම ගෙවීමට ඇති (UNPAID)</div><div class="tval" style="color:var(--rust-dark)">${formatMoney(totalOutstanding)}</div></div>
+  `;
+}
+
+function populateMonthFilter(){
+  const sel = document.getElementById('monthFilter');
+  if(!sel) return;
+  const current = sel.value;
+  const months = [...new Set(advRows.map(r => (r.dateISO || '').slice(0,7)).filter(Boolean))].sort().reverse();
+  const monthNames = ['ජනවාරි','පෙබරවාරි','මාර්තු','අප්‍රේල්','මැයි','ජූනි','ජූලි','අගෝස්තු','සැප්තැම්බර්','ඔක්තෝබර්','නොවැම්බර්','දෙසැම්බර්'];
+  sel.innerHTML = '<option value="all">සියල්ල</option>' + months.map(m => {
+    const [y, mo] = m.split('-');
+    const label = monthNames[parseInt(mo,10)-1] + ' ' + y;
+    return `<option value="${m}">${label}</option>`;
+  }).join('');
+  sel.value = months.includes(current) || current === 'all' ? current : 'all';
+}
+
+document.getElementById('monthFilter').addEventListener('change', () => {
+  const sel = document.getElementById('monthFilter');
+  const label = document.getElementById('printMonthLabel');
+  if(sel.value === 'all'){
+    label.textContent = 'සියලුම වාර්තා';
+  }else{
+    label.textContent = sel.options[sel.selectedIndex].textContent + ' මාසික වාර්තාව';
+  }
+  renderAdvTable();
+});
+
+document.getElementById('pdfBtn').addEventListener('click', () => {
+  window.print();
+});
+
+document.getElementById('autoSaveBtn').addEventListener('click', async () => {
+  if(!window.showSaveFilePicker){
+    alert('මේ browser එකේ auto-save feature එක support වෙන්නේ නෑ. Chrome හෝ Edge browser එකක් පාවිච්චි කරන්න. එතෙක් "Manual Save" button එකෙන් backup ගන්න පුළුවන්.');
+    return;
+  }
+  try{
+    autoSaveFileHandle = await window.showSaveFilePicker({
+      suggestedName: 'ST-BOOKSHOP-advance-table.json',
+      types: [{description: 'JSON File', accept: {'application/json': ['.json']}}]
+    });
+    await writeAutoSaveFile();
+    setAutoSaveStatus(true);
+  }catch(e){
+    // user cancelled the picker - do nothing
+  }
+});
+
+document.getElementById('backupBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(advRows, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `ST-BOOKSHOP-advance-table-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  document.getElementById('restoreFile').click();
+});
+
+document.getElementById('restoreFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data)) throw new Error('invalid format');
+      if(!confirm(`${data.length} පේළි load කරන්නද? දැනට තියෙන data එක replace වේවි.`)) return;
+      advRows = data;
+      await saveAdvRows();
+      populateMonthFilter();
+      renderAdvTable();
+      alert('Data සාර්ථකව load කරන ලදී.');
+    }catch(err){
+      alert('මේ file එක load කරගන්න බැරි උනා. හරි JSON backup file එකක්ද කියලා පරීක්ෂා කරන්න.');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('advTableBody').addEventListener('input', (e) => {
+  const field = e.target.dataset.field;
+  if(!field || field === 'delivered' || field === 'paid') return;
+  if(e.target.tagName === 'TEXTAREA') autoResize(e.target);
+  const tr = e.target.closest('tr');
+  const row = advRows.find(r => r.id === tr.dataset.id);
+  if(row){
+    row[field] = e.target.value;
+    if((field === 'name' || field === 'reason') && !row.dateTaken && e.target.value.trim()){
+      const now = new Date();
+      row.dateTaken = now.toLocaleDateString('si-LK', {day:'numeric', month:'short', year:'numeric'});
+      row.dateISO = now.toISOString().slice(0,10);
+      const dateInput = tr.querySelector('[data-field="dateTaken"]');
+      if(dateInput) dateInput.value = row.dateTaken;
+      populateMonthFilter();
+    }
+    if(field === 'amount' || field === 'advance'){
+      const cell = tr.querySelector('.rem-amt');
+      if(cell) cell.textContent = calcRemaining(row);
+      const filterVal = document.getElementById('monthFilter').value;
+      const rowsToShow = filterVal === 'all' ? advRows : advRows.filter(rr => (rr.dateISO || '').slice(0,7) === filterVal);
+      renderTotals(rowsToShow);
+    }
+    queueSave();
+  }
+});
+
+document.getElementById('advTableBody').addEventListener('change', (e) => {
+  const field = e.target.dataset.field;
+  if(field !== 'delivered' && field !== 'paid') return;
+  const tr = e.target.closest('tr');
+  const row = advRows.find(r => r.id === tr.dataset.id);
+  if(!row) return;
+  if(field === 'delivered'){
+    row.delivered = e.target.checked;
+    row.deliveredDate = e.target.checked ? new Date().toLocaleDateString('si-LK', {day:'numeric', month:'short', year:'numeric'}) : '';
+  }else if(field === 'paid'){
+    row.paid = e.target.checked;
+    row.paidDate = e.target.checked ? new Date().toLocaleDateString('si-LK', {day:'numeric', month:'short', year:'numeric'}) : '';
+  }
+  saveAdvRows();
+  renderAdvTable();
+});
+
+document.getElementById('advTableBody').addEventListener('click', async (e) => {
+  const id = e.target.dataset.del;
+  if(!id) return;
+  const row = advRows.find(r => r.id === id);
+  const name = row && row.name ? row.name.trim() : '';
+  const confirmMsg = name ? `"${name}" පේළිය මකන්නද?` : 'මේ පේළිය මකන්නද?';
+  if(!confirm(confirmMsg)) return;
+  advRows = advRows.filter(r => r.id !== id);
+  await saveAdvRows();
+  renderAdvTable();
+});
+
+document.getElementById('addRowBtn').addEventListener('click', async () => {
+  advRows.push(blankRow());
+  await saveAdvRows();
+  renderAdvTable();
+  const inputs = document.querySelectorAll('#advTableBody tr:last-child textarea');
+  if(inputs.length) inputs[0].focus();
+});
+
+document.getElementById('retrySaveBtn').addEventListener('click', () => {
+  saveAdvRows();
+});
+
+loadAll();
+</script>
+</body>
+</html>
