@@ -21,7 +21,7 @@
 
   body{
     font-family:'Nunito','Noto Sans Sinhala',sans-serif;
-    background:var(--bg-deep); min-height:100vh; padding:36px 20px 80px; color:var(--text-main);
+    background:var(--bg-deep); min-height:100vh; padding:28px 18px 80px; color:var(--text-main);
     background-image:
       radial-gradient(ellipse 70% 45% at 50% -5%,rgba(214,40,57,.10) 0%,transparent 70%),
       repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(214,40,57,.025) 60px),
@@ -54,7 +54,7 @@
 
   /* ══ TABS ══ */
   .tabs{
-    display:flex;max-width:750px;margin:0 auto 0;
+    display:flex;max-width:none;margin:0 auto 0;
     border-bottom:1px solid rgba(214,40,57,.32);
   }
   .tab-btn{
@@ -72,7 +72,7 @@
   /* ══ CONTROLS ══ */
   .controls{
     background:var(--bg-panel);border:var(--border-g);padding:36px;
-    max-width:750px;margin:0 auto 40px;display:grid;grid-template-columns:1fr 1fr;gap:26px;
+    max-width:none;margin:0 auto 40px;display:grid;grid-template-columns:1fr 1fr;gap:26px;
     position:relative;animation:fadeUp .9s .1s ease both,panel-glow 4s 1s ease-in-out infinite;
     border-top:none;
   }
@@ -202,7 +202,7 @@
   }
   .print-btn:hover{background:rgba(214,40,57,.1);box-shadow:0 0 22px rgba(214,40,57,.3);transform:translateY(-2px)}
 
-  #preview{max-width:930px;margin:0 auto;animation:fadeUp 1s .2s ease both}
+  #preview{max-width:none;margin:0 auto;animation:fadeUp 1s .2s ease both}
   #cards-container{
     display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:30px;
     background:var(--bg-panel);border:var(--border-g);box-shadow:0 0 40px rgba(214,40,57,.08)
@@ -255,17 +255,13 @@
   #font-preloader{position:fixed;opacity:0;pointer-events:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:1px;top:-999px}
 
   /* ══ FOOTER ══ */
-  .footer{text-align:center;margin-top:60px;padding:20px;animation:fadeUp 1s .3s ease both}
-  .footer-orn{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
-  .footer-orn::before,.footer-orn::after{content:'';width:60px;height:1px}
-  .footer-orn::before{background:linear-gradient(90deg,transparent,rgba(214,40,57,.4))}
-  .footer-orn::after{background:linear-gradient(90deg,rgba(214,40,57,.4),transparent)}
-  .footer-orn span{color:var(--gold-3);font-size:.55rem;letter-spacing:1px}
-  .footer p{font-family:'Nunito','Noto Sans Sinhala',sans-serif;font-size:.72rem;letter-spacing:2.5px;color:var(--text-dim)}
-  .footer strong{
-    background:linear-gradient(90deg,var(--gold-3),var(--gold-1),var(--gold-3));background-size:200% auto;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 5s linear infinite
-  }
+  .footer{text-align:center;margin-top:60px;padding:20px 20px 28px;animation:fadeUp 1s .3s ease both}
+  .dev-line{height:2px;max-width:640px;margin:0 auto 22px;border-radius:2px;background:linear-gradient(90deg,transparent,#6366f1 25%,#38bdf8 50%,#a855f7 75%,transparent)}
+  .dev-by{font-family:'Nunito','Noto Sans Sinhala',sans-serif;font-weight:800;font-size:1.05rem;color:#14141c;margin-bottom:10px}
+  .dev-name{font-family:'Nunito','Noto Sans Sinhala',sans-serif;font-weight:800;font-size:1.7rem;line-height:1.3;
+    background:linear-gradient(90deg,#2f6fd0,#6a5bdc 50%,#d6409f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:14px}
+  .dev-rights{font-family:'Nunito','Noto Sans Sinhala',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:3px;color:#14141c}
+  .dev-credit{margin-top:14px;font-size:.6rem;letter-spacing:.5px;color:var(--text-dim)}
 
   @media(max-width:600px){
     .controls{grid-template-columns:1fr;padding:22px 18px}
@@ -293,7 +289,7 @@
 </div>
 
 <!-- TABS -->
-<div class="tabs" style="max-width:750px;margin:0 auto 0">
+<div class="tabs" style="max-width:none;margin:0 auto 0">
   <button class="tab-btn active" onclick="switchTab('numbers')">🔢 &nbsp; ඉලක්කම්</button>
   <button class="tab-btn"        onclick="switchTab('words')">අ &nbsp; ඉලක්කම් අකුරින්</button>
   <button class="tab-btn"        onclick="switchTab('hodiya')">ක &nbsp; සිංහල</button>
@@ -556,6 +552,15 @@
         </select>
       </div>
       <div class="control-group">
+        <label>පිටුවේ සැකැස්ම</label>
+        <select id="aLayout">
+          <option value="auto" selected>ඔටෝ (Landscape → A4 දෙකකට, Portrait → යට යට)</option>
+          <option value="row">එකම පිටුවේ එක පේළියක් (පොඩියට)</option>
+          <option value="stack">යට යට පේළි (Portrait)</option>
+          <option value="bands">A4 දෙකකට (පිටුවකට අවාන් 7 බැගින්, ලොකුවට)</option>
+        </select>
+      </div>
+      <div class="control-group">
         <label>අවානක පළල (සෙ.මී.)</label>
         <input type="number" id="aW" value="" placeholder="ඔටෝ — පිටුවට ගැළපෙන" min="2" max="12" step="0.1">
       </div>
@@ -699,9 +704,11 @@
 </div>
 
 <div class="footer">
-  <div class="footer-orn"><span>✦ ✦ ✦</span></div>
-  <p>© 2026 &nbsp; <strong>Jeewan Madhusanka</strong> &nbsp; — &nbsp; All Rights Reserved</p>
-  <p style="margin-top:6px;font-size:.62rem;letter-spacing:1px">Pictures: Twemoji © Twitter, Inc. &amp; contributors — CC-BY 4.0</p>
+  <div class="dev-line"></div>
+  <div class="dev-by">Developed&nbsp; by</div>
+  <div class="dev-name">Jeewan&nbsp; Madhusanka&nbsp; Kariyawasam</div>
+  <div class="dev-rights">© 2026 &nbsp;·&nbsp; ALL RIGHTS RESERVED</div>
+  <div class="dev-credit">Pictures: Twemoji © Twitter, Inc. &amp; contributors — CC-BY 4.0</div>
 </div>
 
 <script>
@@ -810,7 +817,7 @@
     document.getElementById('wCustom').value = '';
     document.getElementById('dOp').value='x'; document.getElementById('dTable').value=2; document.getElementById('dCount').value=10;
     document.getElementById('dShuffle').value='1'; document.getElementById('dW').value=6; document.getElementById('dH').value=2;
-    document.getElementById('aSet').value='all'; document.getElementById('aW').value='';
+    document.getElementById('aSet').value='all'; document.getElementById('aW').value=''; document.getElementById('aLayout').value='auto';
     document.getElementById('hPlaces').value='3'; document.getElementById('hDigits').value='1-9'; document.getElementById('hW').value=1.3; document.getElementById('hH').value=1.5;
     document.getElementById('scW').value=9; document.getElementById('scH').value=6;
     resetImages();
@@ -822,8 +829,9 @@
   function switchTab(tab) {
     if (tab !== currentTab) resetTabWork();
     // the number strap is a long landscape strip: use a landscape page, and give the page back when leaving
-    if (tab === 'strap' && currentTab !== 'strap') { orientBeforeStrap = currentOrient; setOrient('landscape'); }
-    else if (tab !== 'strap' && currentTab === 'strap' && orientBeforeStrap) { setOrient(orientBeforeStrap); orientBeforeStrap = null; }
+    const wantsLand = t => t==='strap' || t==='awana';
+    if (wantsLand(tab) && !wantsLand(currentTab)) { orientBeforeStrap = currentOrient; setOrient('landscape'); }
+    else if (!wantsLand(tab) && wantsLand(currentTab) && orientBeforeStrap) { setOrient(orientBeforeStrap); orientBeforeStrap = null; }
     currentTab = tab;
     if (tab === 'school') buildSchoolGrid();
     const order = ['numbers','words','hodiya','english','round','strap','image','domino','school','hipath','awana'];
@@ -1567,20 +1575,30 @@
       {t:'+',w:'එකතු ලකුණ',c:'#c890cf',b:'#a02a8a'},{t:'_',w:'පිළිතුර',c:'#f89c35',b:'#f26d33'}];
     const items=all?BLADES:BLADES.slice(0,10);
     const H=211, DX=106, DOWN=105, BAND=312, PERBAND=7, UP=4;
-    // geometry (units: blade width = 100): rows of 4 upright blades with 3 upside-down blades nested between them
-    const bands=Math.ceil(items.length/PERBAND);
-    const lastN=items.length-(bands-1)*PERBAND;
-    const totalW=(Math.min(UP,items.length)-1)*DX+100;
-    const totalH=(bands-1)*BAND+(lastN>UP?DOWN+H:H);
+    let mode=document.getElementById('aLayout').value;
+    if(mode==='auto')mode=currentOrient==='landscape'?'bands':'stack';
+    // ── layout: pages of placed blades (x,y in units; blade width = 100) ──
+    let pages=[];
+    function layoutPages(DXv){
+    pages=[];
+    if(mode==='row'){            // everything in one long row: up, down, up, down … (fits a landscape sheet)
+      const pl=items.map((b,i)=>({b,x:i*DXv/2,y:(i%2)?DOWN:0,flip:!!(i%2)}));
+      pages.push(pl);
+    } else {
+      const bands=[]; for(let i=0;i<items.length;i+=PERBAND)bands.push(items.slice(i,i+PERBAND));
+      const place=(band,y0)=>band.map((b,r)=>r<UP?{b,x:r*DXv,y:y0,flip:false}:{b,x:(r-UP)*DXv+DXv/2,y:y0+DOWN,flip:true});
+      if(mode==='bands')bands.forEach(bd=>pages.push(place(bd,0)));
+      else pages.push(bands.flatMap((bd,bi)=>place(bd,bi*BAND)));
+    }
+    }
+    layoutPages(DX);
+    const ext=pl=>({w:Math.max(...pl.map(o=>o.x+100)),h:Math.max(...pl.map(o=>o.y+H))});
+    let E=pages.map(ext), maxW=Math.max(...E.map(e=>e.w)), maxH=Math.max(...E.map(e=>e.h));
     const usable=getPaperUsable();
-    let wCm=Math.min((usable.w-0.2)/totalW*100,(usable.h-0.2)/totalH*100);
+    let wCm=Math.min((usable.w-0.2)/maxW*100,(usable.h-0.2)/maxH*100);
     const typed=parseFloat(document.getElementById('aW').value);
     if(typed>0)wCm=Math.min(wCm,typed);
-    const k=wCm/100;   // cm per unit
-    const ns='http://www.w3.org/2000/svg';
-    const svg=document.createElementNS(ns,'svg');
-    svg.setAttribute('viewBox',`-1 -1 ${totalW+2} ${totalH+2}`);
-    svg.style.cssText=`width:${(totalW+2)*k}cm;height:${(totalH+2)*k}cm;display:block;flex:none;overflow:visible;`;
+    const k=wCm/100, ns='http://www.w3.org/2000/svg';
     const meas=document.createElement('canvas').getContext('2d'); meas.font="700 100px 'Noto Sans Sinhala','Nunito',sans-serif";
     const BAR='#231f20';
     function sym(t){
@@ -1588,16 +1606,15 @@
       if(t==='-')return `<rect x="22" y="45" width="56" height="12" fill="${BAR}"/>`;
       if(t==='+')return `<rect x="22" y="45" width="56" height="12" fill="${BAR}"/><rect x="44" y="24" width="12" height="54" fill="${BAR}"/>`;
       if(t==='_')return `<line x1="14" y1="52" x2="86" y2="52" stroke="${BAR}" stroke-width="1.6" stroke-dasharray="1.2 2.4"/>`;
-      const sh=DIGIT_SHAPES[t], sc=0.62*1.0, dw=sh.w*sc, dh=80*sc;
+      const sh=DIGIT_SHAPES[t], sc=0.62, dw=sh.w*sc, dh=80*sc;
       return `<g transform="translate(${50-dw/2} ${50-dh/2}) scale(${sc})" color="${BAR}"><g fill="none" stroke="currentColor" stroke-width="17">${sh.d}</g></g>`;
     }
     function bladeSvg(b){
-      const xl=y=>39*(y-50)/150;   // left edge of the cone at height y
+      const xl=y=>39*(y-50)/150;
       const body=`M0 50 A50 50 0 0 1 100 50 L61 200 A11 11 0 0 1 39 200 Z`;
       const y1=88,y2=124, band=`${xl(y1)},${y1} ${100-xl(y1)},${y1} ${100-xl(y2)},${y2} ${xl(y2)},${y2}`;
-      const maxW=(100-2*xl(y2))*0.9;
-      const wUnits=meas.measureText(b.w).width/100;           // em width
-      const fs=Math.min(22,maxW/Math.max(0.5,wUnits));
+      const maxTW=(100-2*xl(y2))*0.9;
+      const fs=Math.min(22,maxTW/Math.max(0.5,meas.measureText(b.w).width/100));
       return `<path d="${body}" fill="${b.c}" stroke="#555" stroke-width="0.5"/>`+
         `<polygon points="${band}" fill="${b.b}"/>`+
         `<text x="50" y="${(y1+y2)/2}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Sans Sinhala','Nunito',sans-serif" font-weight="700" font-size="${fs}" fill="#fff">${b.w}</text>`+
@@ -1605,46 +1622,49 @@
         `<text x="50" y="158" text-anchor="middle" font-family="'Nunito',sans-serif" font-weight="800" font-size="5.5" fill="#000" fill-opacity=".45">ST BOOKSHOP</text>`+
         `<circle cx="50" cy="199" r="2.2" fill="#231f20"/>`;
     }
-    let out='';
-    items.forEach((b,i)=>{
-      const band=Math.floor(i/PERBAND), r=i%PERBAND, y0=band*BAND;
-      if(r<UP){ out+=`<g transform="translate(${r*DX} ${y0})">${bladeSvg(b)}</g>`; }
-      else{ const x=(r-UP)*DX+DX/2, y=y0+DOWN; out+=`<g transform="translate(${x+50} ${y+H/2}) rotate(180) translate(-50 ${-H/2})">${bladeSvg(b)}</g>`; }
-    });
-    svg.innerHTML=out;
+    function mk(w,h){
+      const svg=document.createElementNS(ns,'svg');
+      svg.setAttribute('viewBox',`-1 -1 ${w+2} ${h+2}`);
+      svg.style.cssText=`width:${(w+2)*k}cm;height:${(h+2)*k}cm;display:block;flex:none;overflow:visible;`;
+      return svg;
+    }
+    const nameOn=document.getElementById('nameEnabled').checked;
+    const name=document.getElementById('childName').value.trim()||'නම';
+    const nfs=Math.min(20,70*0.8/Math.max(0.4,meas.measureText(name).width/100));
+    const esc=name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    function front(pl,e){
+      const svg=mk(maxW,maxH);
+      svg.innerHTML=pl.map(o=>o.flip?`<g transform="translate(${o.x+50} ${o.y+H/2}) rotate(180) translate(-50 ${-H/2})">${bladeSvg(o.b)}</g>`:`<g transform="translate(${o.x} ${o.y})">${bladeSvg(o.b)}</g>`).join('');
+      return svg;
+    }
+    function back(pl,e){
+      const svg=mk(maxW,maxH);
+      svg.innerHTML=pl.map(o=>{
+        const cx=e.w-(o.x+50), cy=o.y+H/2;     // mirrored left-right across the page
+        return `<g transform="rotate(${o.flip?180:0} ${cx} ${cy})"><text x="${cx}" y="${o.y+110}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Sans Sinhala','Nunito',sans-serif" font-weight="700" font-size="${nfs}" fill="#111">${esc}</text></g>`;
+      }).join('');
+      return svg;
+    }
     const info=document.getElementById('paperInfo');
     if(info){const p=paperSizes[currentPaper];const wD=currentOrient==='portrait'?p.w:p.h,hD=currentOrient==='portrait'?p.h:p.w;
-      info.textContent=`${p.label} ${currentOrient==='portrait'?'Portrait':'Landscape'} — ${wD}×${hD} cm │ අවානක පළල: ${wCm.toFixed(1)} cm │ උස: ${(H*k).toFixed(1)} cm`;}
+      info.textContent=`${p.label} ${currentOrient==='portrait'?'Portrait':'Landscape'} — ${wD}×${hD} cm │ අවානක පළල: ${wCm.toFixed(1)} cm │ උස: ${(H*k).toFixed(1)} cm │ පිටු: ${pages.length}${nameOn?' ×2':''}`;}
     const container=document.getElementById('cards-container');
     const pg=document.getElementById('print-grid'), pgb=document.getElementById('print-grid-back');
     container.innerHTML='';pg.innerHTML='';pgb.innerHTML='';
     document.getElementById('print-back-layout').style.display='none';
     const avail=Math.max(200,container.clientWidth-64);
-    const wrap=document.createElement('div');
-    wrap.style.cssText='flex:0 0 100%;display:flex;justify-content:center;margin:6px 0';
-    const prev=svg.cloneNode(true); prev.style.zoom=Math.min(1,avail/((totalW+2)*k*PXCM)); wrap.appendChild(prev); container.appendChild(wrap);
-    const row=document.createElement('div'); row.className='print-row'; row.style.justifyContent='flex-start'; row.appendChild(svg); pg.appendChild(row);
-    // back side: the child's name behind every blade (positions mirrored so it lines up when printed on both sides)
-    if(document.getElementById('nameEnabled').checked){
-      const name=document.getElementById('childName').value.trim()||'නම';
-      const nw=meas.measureText(name).width/100;
-      const maxNW=70*0.8, nfs=Math.min(20,maxNW/Math.max(0.4,nw));
-      const bsvg=document.createElementNS(ns,'svg');
-      bsvg.setAttribute('viewBox',`-1 -1 ${totalW+2} ${totalH+2}`);
-      bsvg.style.cssText=svg.style.cssText;
-      let bo='';
-      items.forEach((b,i)=>{
-        const band=Math.floor(i/PERBAND), r=i%PERBAND, y0=band*BAND;
-        let x,y,rot;
-        if(r<UP){x=r*DX;y=y0;rot=0;} else {x=(r-UP)*DX+DX/2;y=y0+DOWN;rot=180;}
-        const cx=totalW-(x+50), cy=y+H/2;           // mirrored horizontally
-        const ty=cy-H/2+110;                         // wide part of the blade
-        bo+=`<g transform="rotate(${rot} ${cx} ${cy})"><text x="${cx}" y="${y+110}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Sans Sinhala','Nunito',sans-serif" font-weight="700" font-size="${nfs}" fill="#111">${name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</text></g>`;
-      });
-      bsvg.innerHTML=bo;
-      addBreak(pg);
-      const r2=document.createElement('div'); r2.className='print-row'; r2.style.justifyContent='flex-start'; r2.appendChild(bsvg); pg.appendChild(r2);
-    }
+    const zoom=Math.min(1,avail/((maxW+2)*k*PXCM));
+    pages.forEach((pl,pi)=>{
+      const wrap=document.createElement('div');
+      wrap.style.cssText='flex:0 0 100%;display:flex;justify-content:center;margin:6px 0';
+      const pv=front(pl,E[pi]); pv.style.zoom=zoom; wrap.appendChild(pv); container.appendChild(wrap);
+      const row=document.createElement('div'); row.className='print-row'; row.style.justifyContent='flex-start'; row.appendChild(front(pl,E[pi])); pg.appendChild(row);
+      if(nameOn){
+        addBreak(pg);
+        const r2=document.createElement('div'); r2.className='print-row'; r2.style.justifyContent='flex-start'; r2.appendChild(back(pl,E[pi])); pg.appendChild(r2);
+      }
+      if(pi+1<pages.length)addBreak(pg);
+    });
   }
 
   /* ══ GENERATE ══ */
